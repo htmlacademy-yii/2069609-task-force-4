@@ -1,7 +1,7 @@
 # Личный проект «TaskForce»
 
 * Студент: [Анна Делян](https://up.htmlacademy.ru/yii/4/user/2069609).
-* Наставник: `Неизвестно`.
+* Наставник: [Никита Колосов](https://htmlacademy.ru/profile/id1186205).
 
 ---
 
