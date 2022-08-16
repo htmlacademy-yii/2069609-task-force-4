@@ -1,5 +1,5 @@
 <?php
-use Delta\TaskForce\business_logic\Task;
+use Delta\TaskForce\Task;
 
 require_once 'vendor/autoload.php';
 

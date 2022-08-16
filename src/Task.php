@@ -1,5 +1,5 @@
 <?php
-namespace Delta\TaskForce\business_logic;
+namespace Delta\TaskForce;
 
 use JetBrains\PhpStorm\ArrayShape;
 
@@ -29,13 +29,7 @@ class Task {
     }
 
     //метод для возврата «карты» статусов
-    #[ArrayShape([
-        self::STATUS_NEW => "string",
-        self::STATUS_CANCELLED => "string",
-        self::STATUS_AT_WORK => "string",
-        self::STATUS_DONE => "string",
-        self::STATUS_FAILED => "string"
-    ])] public function getStatusMap(): array
+    public function getStatusMap(): array
     {
         return [
             self::STATUS_NEW => 'Новое',
@@ -47,12 +41,7 @@ class Task {
     }
 
     //метод для возврата «карты» действий
-    #[ArrayShape([
-        self::ACTION_CANCEL => "string",
-        self::ACTION_GET_DONE => "string",
-        self::ACTION_RESPOND => "string",
-        self::ACTION_REFUSE => "string"
-    ])] public function getActionMap(): array
+    public function getActionMap(): array
     {
         return [
           self::ACTION_CANCEL => 'Отменить',
