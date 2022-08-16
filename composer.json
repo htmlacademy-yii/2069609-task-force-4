@@ -1,0 +1,18 @@
+{
+    "name": "delta/task-force",
+    "description": "An online platform for finding performers for one-time tasks",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Delta\\TaskForce\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Anna Delyan",
+            "email": "anna_delyan@mail.ru"
+        }
+    ],
+    "require": {}
+}

@@ -1,5 +1,7 @@
 <?php
-require_once 'classes.php';
+use Delta\TaskForce\Task;
+
+require_once 'vendor/autoload.php';
 
 $newTask = new Task(4,6);
 $mapAction = $newTask->getActionMap();
@@ -26,3 +28,5 @@ $nextStatus = $newTask->getNextStatus('get done', 'work', 4);
 var_dump($nextStatus);
 $nextStatus = $newTask->getNextStatus('refuse', 'work', 6);
 var_dump($nextStatus);
+$actionMap = $newTask->getActionMap();
+var_dump($actionMap);

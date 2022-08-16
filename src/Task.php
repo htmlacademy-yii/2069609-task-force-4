@@ -1,4 +1,8 @@
 <?php
+namespace Delta\TaskForce;
+
+use JetBrains\PhpStorm\ArrayShape;
+
 class Task {
     //статусы заданий
     const STATUS_NEW = 'new';
@@ -27,24 +31,24 @@ class Task {
     //метод для возврата «карты» статусов
     public function getStatusMap(): array
     {
-        return array([
+        return [
             self::STATUS_NEW => 'Новое',
             self::STATUS_CANCELLED => 'Отменено',
             self::STATUS_AT_WORK => 'В работе',
             self::STATUS_DONE => 'Выполнено',
             self::STATUS_FAILED => 'Провалено'
-        ]);
+        ];
     }
 
     //метод для возврата «карты» действий
     public function getActionMap(): array
     {
-        return array([
+        return [
           self::ACTION_CANCEL => 'Отменить',
           self::ACTION_GET_DONE => 'Выполнено',
           self::ACTION_RESPOND => 'Откликнуться',
           self::ACTION_REFUSE => 'Отказаться'
-        ]);
+        ];
     }
 
     //метод для получения доступных действий для указанного статуса
