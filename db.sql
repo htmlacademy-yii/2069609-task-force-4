@@ -1,6 +1,5 @@
 CREATE DATABASE taskforce;
 use taskforce;
-
 /* города */
 CREATE TABLE cities (
   id_city INT AUTO_INCREMENT PRIMARY KEY,
