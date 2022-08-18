@@ -3,7 +3,8 @@ use taskforce;
 /* города */
 CREATE TABLE cities (
   id_city INT AUTO_INCREMENT PRIMARY KEY,
-  name_city VARCHAR(255) NOT NULL
+  name_city VARCHAR(255) NOT NULL,
+  point POINT NOT NULL
 );
 /* пользователи */
 CREATE TABLE users (
@@ -43,8 +44,8 @@ CREATE TABLE tasks (
   id_user INT NOT NULL,
   status VARCHAR(64) NOT NULL,
   budget INT UNSIGNED,
-  id_city INT NOT NULL,
-  point POINT NOT NULL,
+  id_city INT,
+  point POINT,
   date_of_publication TIMESTAMP DEFAULT NOW(),
   description VARCHAR(255) NOT NULL,
   date_of_execution DATE,
