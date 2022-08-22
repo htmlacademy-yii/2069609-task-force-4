@@ -63,7 +63,7 @@ CREATE TABLE response (
 );
 /* таблица связывающая исполнителей и категории */
 CREATE TABLE executor_category (
-  category_id INT,
+  category_id INT NOT NULL,
   user_id INT NOT NULL,
   PRIMARY KEY (category_id, user_id),
   FOREIGN KEY (user_id) REFERENCES user (id),
