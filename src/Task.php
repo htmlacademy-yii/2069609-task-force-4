@@ -1,8 +1,6 @@
 <?php
 namespace Delta\TaskForce;
 
-use JetBrains\PhpStorm\ArrayShape;
-
 class Task {
     //статусы заданий
     const STATUS_NEW = 'new';
