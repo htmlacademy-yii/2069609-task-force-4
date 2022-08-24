@@ -24,11 +24,6 @@ class Task {
     {
         $this->idCustomer = $idCustomer;
         $this->idExecutor = $idExecutor;
-
-        $this->canselAction = new CancelAction;
-        $this->getDoneAction = new GetDoneAction;
-        $this->respondAction = new RespondAction;
-        $this->refuseAction = new RefuseAction;
     }
 
     //метод для возврата «карты» статусов
@@ -55,19 +50,19 @@ class Task {
     }
 
     //метод для получения доступных действий для указанного статуса
-    public function getAvailableActions(string $status, int $userCurrentId): ?object
+    public function getAvailableActions(string $status, int $userCurrentId): ?Action
     {
-        if ($status === self::STATUS_NEW && $this->canselAction->getVerification($userCurrentId, $this->idCustomer, $this->idExecutor)) {
-            return new CancelAction;
+        if ($status === self::STATUS_NEW && CancelAction::isAvailable($userCurrentId, $this->idCustomer, $this->idExecutor)) {
+            return new CancelAction();
         }
-        if ($status === self::STATUS_NEW && $this->respondAction->getVerification($userCurrentId, $this->idCustomer, $this->idExecutor)) {
-            return new RespondAction;
+        if ($status === self::STATUS_NEW && RespondAction::isAvailable($userCurrentId, $this->idCustomer, $this->idExecutor)) {
+            return new RespondAction();
         }
-        if ($status === self::STATUS_AT_WORK && $this->getDoneAction->getVerification($userCurrentId, $this->idCustomer, $this->idExecutor)) {
-            return new GetDoneAction;
+        if ($status === self::STATUS_AT_WORK && GetDoneAction::isAvailable($userCurrentId, $this->idCustomer, $this->idExecutor)) {
+            return new GetDoneAction();
         }
-        if ($status === self::STATUS_AT_WORK && $this->refuseAction->getVerification($userCurrentId, $this->idCustomer, $this->idExecutor)) {
-            return new RefuseAction;
+        if ($status === self::STATUS_AT_WORK && RefuseAction::isAvailable($userCurrentId, $this->idCustomer, $this->idExecutor)) {
+            return new RefuseAction();
         }
         return null;
     }

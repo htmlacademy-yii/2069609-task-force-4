@@ -4,20 +4,20 @@ namespace Delta\TaskForce;
 
 class GetDoneAction extends Action
 {
-    private string $action = 'Выполнено';
-    private string $name = 'get done';
+    const ACTION = 'Выполнено';
+    const NAME = 'get done';
 
-    public function getAction(string $action): string
+    public function getAction(): string
     {
-        return $action;
+        return self::ACTION;
     }
 
-    public function getName(string $name): string
+    public function getName(): string
     {
-        return $name;
+        return self::NAME;
     }
 
-    public function getVerification(int $userCurrentId, int $idCustomer, int $idExecutor): bool
+    public static function isAvailable(int $userCurrentId, int $idCustomer, int $idExecutor): bool
     {
         if ($userCurrentId === $idCustomer) {
             return true;

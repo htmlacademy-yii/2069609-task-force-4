@@ -4,20 +4,20 @@ namespace Delta\TaskForce;
 
 class RefuseAction extends Action
 {
-    private string $action = 'Отказаться';
-    private string $name = 'refuse';
+    const ACTION = 'Отказаться';
+    const NAME = 'refuse';
 
-    public function getAction(string $action): string
+    public function getAction(): string
     {
-        return $action;
+        return self::ACTION;
     }
 
-    public function getName(string $name): string
+    public function getName(): string
     {
-        return $name;
+        return self::NAME;
     }
 
-    public function getVerification(int $userCurrentId, int $idCustomer, int $idExecutor): bool
+    public static function isAvailable(int $userCurrentId, int $idCustomer, int $idExecutor): bool
     {
         if ($userCurrentId === $idExecutor) {
             return true;
