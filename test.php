@@ -17,6 +17,7 @@ $availableActionsDoneExecutor = $newTask->getAvailableActions($statusDone, 4);
 
 var_dump($availableActionsNewCustomer, $availableActionsNewExecutor, $availableActionsDoneCustomer, $availableActionsDoneExecutor);
 
+/*
 $idCustomer = $newTask->idCustomer;
 var_dump($idCustomer);
 
@@ -30,3 +31,4 @@ $nextStatus = $newTask->getNextStatus('refuse', 'work', 6);
 var_dump($nextStatus);
 $actionMap = $newTask->getActionMap();
 var_dump($actionMap);
+*/

@@ -50,19 +50,19 @@ class Task {
     }
 
     //метод для получения доступных действий для указанного статуса
-    public function getAvailableActions(string $status, int $userCurrentId): ?string
+    public function getAvailableActions(string $status, int $userCurrentId): ?Action
     {
-        if ($status === self::STATUS_NEW && $userCurrentId === $this->idCustomer) {
-            return self::ACTION_CANCEL;
+        if ($status === self::STATUS_NEW && CancelAction::isAvailable($userCurrentId, $this->idCustomer, $this->idExecutor)) {
+            return new CancelAction();
         }
-        if ($status === self::STATUS_NEW && $userCurrentId === $this->idExecutor) {
-            return self::ACTION_RESPOND;
+        if ($status === self::STATUS_NEW && RespondAction::isAvailable($userCurrentId, $this->idCustomer, $this->idExecutor)) {
+            return new RespondAction();
         }
-        if ($status === self::STATUS_AT_WORK && $userCurrentId === $this->idCustomer) {
-            return self::ACTION_GET_DONE;
+        if ($status === self::STATUS_AT_WORK && GetDoneAction::isAvailable($userCurrentId, $this->idCustomer, $this->idExecutor)) {
+            return new GetDoneAction();
         }
-        if ($status === self::STATUS_AT_WORK && $userCurrentId === $this->idExecutor) {
-            return self::ACTION_REFUSE;
+        if ($status === self::STATUS_AT_WORK && RefuseAction::isAvailable($userCurrentId, $this->idCustomer, $this->idExecutor)) {
+            return new RefuseAction();
         }
         return null;
     }
