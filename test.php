@@ -1,6 +1,6 @@
 <?php
 use Delta\TaskForce\Task;
-use Delta\TaskForce\ex\IncomingDataException;
+use Delta\TaskForce\exceptions\IncomingDataException;
 
 require_once 'vendor/autoload.php';
 

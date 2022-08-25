@@ -1,7 +1,7 @@
 <?php
 namespace Delta\TaskForce;
 
-use Delta\TaskForce\ex\IncomingDataException;
+use Delta\TaskForce\exceptions\IncomingDataException;
 
 class Task {
     //статусы заданий
@@ -59,7 +59,7 @@ class Task {
      */
     public function getAvailableActions(string $status, int $userCurrentId): ?Action
     {
-        $isCanselActionAvailable = CancelAction::isAvailable($userCurrentId, $this->idCustomer, $this->idExecutor);
+        $isCancelActionAvailable = CancelAction::isAvailable($userCurrentId, $this->idCustomer, $this->idExecutor);
         $isRespondActionAvailable = RespondAction::isAvailable($userCurrentId, $this->idCustomer, $this->idExecutor);
         $isGetDoneActionAvailable = GetDoneAction::isAvailable($userCurrentId, $this->idCustomer, $this->idExecutor);
         $isRefuseActionAvailable = RefuseAction::isAvailable($userCurrentId, $this->idCustomer, $this->idExecutor);
@@ -70,7 +70,7 @@ class Task {
             }
         }
 
-        if ($status === self::STATUS_NEW && $isCanselActionAvailable) {
+        if ($status === self::STATUS_NEW && $isCancelActionAvailable) {
             return new CancelAction();
         }
         if ($status === self::STATUS_AT_WORK && $isGetDoneActionAvailable) {
@@ -92,9 +92,12 @@ class Task {
      */
     public function getNextStatus(string $action, string $currentStatus, int $userCurrentId): ?string
     {
-        if (($action !== self::ACTION_CANCEL) && ($action !== self::ACTION_RESPOND) && ($action !== self::ACTION_GET_DONE) && ($action !== self::ACTION_REFUSE)
-        || ($currentStatus !== self::STATUS_NEW) && ($currentStatus === self::STATUS_AT_WORK)) {
-            throw new IncomingDataException("Вводимого действия/текущего статуса не существует");
+        if (($action !== self::ACTION_CANCEL) && ($action !== self::ACTION_RESPOND) &&
+            ($action !== self::ACTION_GET_DONE) && ($action !== self::ACTION_REFUSE)) {
+            throw new IncomingDataException("Не существует действия (или действие недоступно)");
+        }
+        if (($currentStatus !== self::STATUS_NEW) && ($currentStatus === self::STATUS_AT_WORK)) {
+            throw new IncomingDataException("Не существует статуса");
         }
         if ($action === self::ACTION_CANCEL && $currentStatus === self::STATUS_NEW && $userCurrentId === $this->idCustomer) {
             return self::STATUS_CANCELLED;

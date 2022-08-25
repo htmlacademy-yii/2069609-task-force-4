@@ -1,6 +1,6 @@
 <?php
 
-namespace Delta\TaskForce\ex;
+namespace Delta\TaskForce\exceptions;
 
 class IncomingDataException extends \Exception
 {
