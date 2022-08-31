@@ -70,4 +70,15 @@ CREATE TABLE executor_category (
   FOREIGN KEY (category_id) REFERENCES category (id)
 );
 
+ALTER TABLE category
+  ADD icon VARCHAR(255) NOT NULL;
 
+ALTER TABLE city
+  MODIFY longitude DECIMAL(11,7);
+ALTER TABLE city
+  MODIFY latitude DECIMAL(11,7);
+
+ALTER TABLE response
+  MODIFY score TINYINT;
+ALTER TABLE response
+  MODIFY feedback VARCHAR(255);
