@@ -1,21 +1,22 @@
 <?php
 
-namespace Delta\TaskForce\classes_for_DB;
+namespace Delta\TaskForce\DataConversion;
 
 use Delta\TaskForce\exceptions\FileFormatException;
 use Delta\TaskForce\exceptions\SourceFileException;
 
 class ConversionCity extends ConversionFromCSVtoSQL
 {
-    CONST FILENAME = 'data/cities.csv';
-    CONST COLUMNS = ['name','lat','long'];
-    CONST NAME_TABLE = 'city';
-    CONST COLUMNS_SQL = ['name','latitude','longitude'];
+    const FILENAME = 'data/cities.csv';
+    const COLUMNS = ['name','lat','long'];
+    const NAME_TABLE = 'city';
+    const COLUMNS_SQL = ['name','latitude','longitude'];
     /**
      * @throws SourceFileException
      * @throws FileFormatException
      */
-    public function getConversion(){
+    public function getConversion(): void
+    {
         $fileObjectSql = ConversionFromCSVtoSQL::getFileObjectSql(self::FILENAME);
         $fileObjectCsv = ConversionFromCSVtoSQL::getFileObjectCsv(self::COLUMNS, self::FILENAME);
         foreach (ConversionFromCSVtoSQL::getNextLine($fileObjectCsv) as $line) {

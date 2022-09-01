@@ -4,8 +4,8 @@ declare(strict_types=1);
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
-use Delta\TaskForce\classes_for_DB\ConversionCategory;
-use Delta\TaskForce\classes_for_DB\ConversionCity;
+use Delta\TaskForce\DataConversion\ConversionCategory;
+use Delta\TaskForce\DataConversion\ConversionCity;
 use Delta\TaskForce\exceptions\FileFormatException;
 use Delta\TaskForce\exceptions\SourceFileException;
 
@@ -23,7 +23,7 @@ catch (FileFormatException $e) {
     error_log("Неверная форма файла импорта: " . $e->getMessage());
 }
 
-/*
+
 $test2 = new ConversionCity();
 
 try {
@@ -35,4 +35,4 @@ catch (SourceFileException $e) {
 catch (FileFormatException $e) {
     error_log("Неверная форма файла импорта: " . $e->getMessage());
 }
-*/
+
