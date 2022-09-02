@@ -7,21 +7,29 @@ use Delta\TaskForce\exceptions\SourceFileException;
 
 class ConversionCategory extends ConversionFromCSVtoSQL
 {
-    const FILENAME = 'data/categories.csv';
-    const COLUMNS = ['name', 'icon'];
-    const NAME_TABLE = 'category';
+    public function getFileName():string
+    {
+        return 'data/categories.csv';
+    }
+    public function getColumns(): array
+    {
+        return ['name','icon'];
+    }
+    public function getTableName(): string
+    {
+        return 'category';
+    }
+    public function getColumnsSQL(): array
+    {
+        return ['name','icon'];
+    }
 
     /**
      * @throws SourceFileException
      * @throws FileFormatException
      */
-    public function getConversion():void
+    public function writeSQL(): void
     {
-        $fileObjectSql = ConversionFromCSVtoSQL::getFileObjectSql(self::FILENAME);
-        $fileObjectCsv = ConversionFromCSVtoSQL::getFileObjectCsv(self::COLUMNS, self::FILENAME);
-        foreach (ConversionFromCSVtoSQL::getNextLine($fileObjectCsv) as $line) {
-            list($name, $icon) = $line;
-            $fileObjectSql->fwrite("INSERT INTO " . self::NAME_TABLE . " (". self::COLUMNS[0] . ", ".self::COLUMNS[1].") VALUES ('" . $name . "', '" . $icon . "');\n");
-        }
+        $this->doConversion();
     }
 }

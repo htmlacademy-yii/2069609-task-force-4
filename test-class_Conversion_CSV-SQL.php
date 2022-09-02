@@ -14,7 +14,7 @@ require_once 'vendor/autoload.php';
 $test1 = new ConversionCategory();
 
 try {
-    $test1->getConversion();
+    $test1->writeSQL();
 }
 catch (SourceFileException $e) {
     error_log("Не удалось обработать csv файл: " . $e->getMessage());
@@ -27,7 +27,7 @@ catch (FileFormatException $e) {
 $test2 = new ConversionCity();
 
 try {
-    $test2->getConversion();
+    $test2->writeSQL();
 }
 catch (SourceFileException $e) {
     error_log("Не удалось обработать csv файл: " . $e->getMessage());

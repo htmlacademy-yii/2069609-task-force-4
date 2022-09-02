@@ -8,7 +8,12 @@ use RuntimeException;
 
 abstract class ConversionFromCSVtoSQL
 {
-   protected function getFileObjectSQl(string $filename): \SplFileObject
+    abstract function getFileName():string;
+    abstract function getColumns():array;
+    abstract function getTableName():string;
+    abstract function getColumnsSQL():array;
+
+    protected function getFileObjectSQl(string $filename): \SplFileObject
     {
         $fileObjectInfo = new \SplFileInfo($filename);
         $fileObjectPath = $fileObjectInfo->getPath();
@@ -55,5 +60,24 @@ abstract class ConversionFromCSVtoSQL
             throw new FileFormatException("Исходный файл не содержит необходимых столбцов");
         }
         return $fileObjectCsv;
+    }
+
+    /**
+     * @throws SourceFileException
+     * @throws FileFormatException
+     */
+    protected function doConversion(): void
+    {
+        $fileObjectSql = $this->getFileObjectSql($this->getFileName());
+        $fileObjectCsv = $this->getFileObjectCsv($this->getColumns(), $this->getFileName());
+        foreach ($this->getNextLine($fileObjectCsv) as $line) {
+            if ($this->getFileName() === 'data/cities.csv') {
+                list($name, $lat, $long) = $line;
+                $fileObjectSql->fwrite("INSERT INTO " . $this->getTableName() . " (" . implode(", ", $this->getColumnsSQL()) . ") VALUES ('" . $name . "', '" . $lat . "', '" . $long . "');\n");
+            } else {
+                list($name, $icon) = $line;
+                $fileObjectSql->fwrite("INSERT INTO " . $this->getTableName() . " (" . implode(", ", $this->getColumnsSQL()) . ") VALUES ('" . $name . "', '" . $icon . "');\n");
+            }
+        }
     }
 }
