@@ -23,13 +23,4 @@ class ConversionCity extends ConversionFromCSVtoSQL
     {
         return ['name','latitude','longitude'];
     }
-
-    /**
-     * @throws SourceFileException
-     * @throws FileFormatException
-     */
-    public function writeSQL(): void
-    {
-        $this->doConversion();
-    }
 }

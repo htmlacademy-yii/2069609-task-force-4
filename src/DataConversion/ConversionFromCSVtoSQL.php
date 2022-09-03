@@ -8,10 +8,10 @@ use RuntimeException;
 
 abstract class ConversionFromCSVtoSQL
 {
-    abstract function getFileName():string;
-    abstract function getColumns():array;
-    abstract function getTableName():string;
-    abstract function getColumnsSQL():array;
+    abstract protected function getFileName():string;
+    abstract protected function getColumns():array;
+    abstract protected function getTableName():string;
+    abstract protected function getColumnsSQL():array;
 
     protected function getFileObjectSQl(string $filename): \SplFileObject
     {
@@ -66,18 +66,15 @@ abstract class ConversionFromCSVtoSQL
      * @throws SourceFileException
      * @throws FileFormatException
      */
-    protected function doConversion(): void
+    public function doConversion(): void
     {
         $fileObjectSql = $this->getFileObjectSql($this->getFileName());
         $fileObjectCsv = $this->getFileObjectCsv($this->getColumns(), $this->getFileName());
         foreach ($this->getNextLine($fileObjectCsv) as $line) {
-            if ($this->getFileName() === 'data/cities.csv') {
-                list($name, $lat, $long) = $line;
-                $fileObjectSql->fwrite("INSERT INTO " . $this->getTableName() . " (" . implode(", ", $this->getColumnsSQL()) . ") VALUES ('" . $name . "', '" . $lat . "', '" . $long . "');\n");
-            } else {
-                list($name, $icon) = $line;
-                $fileObjectSql->fwrite("INSERT INTO " . $this->getTableName() . " (" . implode(", ", $this->getColumnsSQL()) . ") VALUES ('" . $name . "', '" . $icon . "');\n");
-            }
+             {
+                 $valueColumns ="('".implode("','", $line)."')";
+                 $fileObjectSql->fwrite("INSERT INTO " . $this->getTableName() . " (" . implode(", ", $this->getColumnsSQL()) . ") VALUES " . $valueColumns . ";\n");
+             }
         }
     }
 }

@@ -7,29 +7,23 @@ use Delta\TaskForce\exceptions\SourceFileException;
 
 class ConversionCategory extends ConversionFromCSVtoSQL
 {
-    public function getFileName():string
+    public function getFileName(): string
     {
         return 'data/categories.csv';
     }
+
     public function getColumns(): array
     {
-        return ['name','icon'];
+        return ['name', 'icon'];
     }
+
     public function getTableName(): string
     {
         return 'category';
     }
+
     public function getColumnsSQL(): array
     {
-        return ['name','icon'];
-    }
-
-    /**
-     * @throws SourceFileException
-     * @throws FileFormatException
-     */
-    public function writeSQL(): void
-    {
-        $this->doConversion();
+        return ['name', 'icon'];
     }
 }
