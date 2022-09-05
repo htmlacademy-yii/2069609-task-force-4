@@ -7,3 +7,6 @@
 *.sublime*
 Thumbs.db
 vendor
+data/categories.sql
+data/cities.sql
+data/user.sql
