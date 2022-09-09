@@ -36,3 +36,6 @@ tests/_support/_generated
 /.vagrant
 
 /runtime
+/data/categories.sql
+/data/cities.sql
+/data/user.sql
