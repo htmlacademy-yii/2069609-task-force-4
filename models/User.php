@@ -81,7 +81,7 @@ class User extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Categories]].
      *
-     * @return \yii\db\ActiveQuery|CategoryQuery
+     * @return \yii\db\ActiveQuery
      * @throws \yii\base\InvalidConfigException
      */
     public function getCategories()
@@ -92,7 +92,7 @@ class User extends \yii\db\ActiveRecord
     /**
      * Gets query for [[City]].
      *
-     * @return \yii\db\ActiveQuery|CityQuery
+     * @return \yii\db\ActiveQuery
      */
     public function getCity()
     {
@@ -102,7 +102,7 @@ class User extends \yii\db\ActiveRecord
     /**
      * Gets query for [[ExecutorCategories]].
      *
-     * @return \yii\db\ActiveQuery|ExecutorCategoryQuery
+     * @return \yii\db\ActiveQuery
      */
     public function getExecutorCategories()
     {
@@ -112,7 +112,7 @@ class User extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Responses]].
      *
-     * @return \yii\db\ActiveQuery|ResponseQuery
+     * @return \yii\db\ActiveQuery
      */
     public function getResponses()
     {
@@ -122,19 +122,10 @@ class User extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Tasks]].
      *
-     * @return \yii\db\ActiveQuery|TaskQuery
+     * @return \yii\db\ActiveQuery
      */
     public function getTasks()
     {
         return $this->hasMany(Task::class, ['user_id' => 'id']);
-    }
-
-    /**
-     * {@inheritdoc}
-     * @return UserQuery the active query used by this AR class.
-     */
-    public static function find(): UserQuery
-    {
-        return new UserQuery(get_called_class());
     }
 }

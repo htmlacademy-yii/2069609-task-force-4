@@ -51,7 +51,7 @@ class ExecutorCategory extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Category]].
      *
-     * @return \yii\db\ActiveQuery|CategoryQuery
+     * @return \yii\db\ActiveQuery
      */
     public function getCategory()
     {
@@ -61,19 +61,10 @@ class ExecutorCategory extends \yii\db\ActiveRecord
     /**
      * Gets query for [[User]].
      *
-     * @return \yii\db\ActiveQuery|UserQuery
+     * @return \yii\db\ActiveQuery
      */
     public function getUser()
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
-    }
-
-    /**
-     * {@inheritdoc}
-     * @return ExecutorCategoryQuery the active query used by this AR class.
-     */
-    public static function find(): ExecutorCategoryQuery
-    {
-        return new ExecutorCategoryQuery(get_called_class());
     }
 }

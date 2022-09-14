@@ -52,7 +52,7 @@ class Category extends \yii\db\ActiveRecord
     /**
      * Gets query for [[ExecutorCategories]].
      *
-     * @return \yii\db\ActiveQuery|ExecutorCategoryQuery
+     * @return \yii\db\ActiveQuery
      */
     public function getExecutorCategories()
     {
@@ -62,7 +62,7 @@ class Category extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Tasks]].
      *
-     * @return \yii\db\ActiveQuery|TaskQuery
+     * @return \yii\db\ActiveQuery
      */
     public function getTasks()
     {
@@ -72,20 +72,11 @@ class Category extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Users]].
      *
-     * @return \yii\db\ActiveQuery|UserQuery
+     * @return \yii\db\ActiveQuery
      * @throws \yii\base\InvalidConfigException
      */
     public function getUsers()
     {
         return $this->hasMany(User::class, ['id' => 'user_id'])->viaTable('executor_category', ['category_id' => 'id']);
-    }
-
-    /**
-     * {@inheritdoc}
-     * @return CategoryQuery the active query used by this AR class.
-     */
-    public static function find(): CategoryQuery
-    {
-        return new CategoryQuery(get_called_class());
     }
 }
