@@ -13,7 +13,7 @@
                 <a  href="#" class="link link--block link--big"><?=$task->description ?></a>
                 <p class="price price--task"><?=$task->budget ?> ₽</p>
             </div>
-            <p class="info-text"><span class="current-time"><?=$task->date_of_publication ?></span>назад</p>
+            <p class="info-text"><span class="current-time"><?=Yii::$app->formatter->asRelativeTime($task->date_of_publication) ?></span></p>
             <p class="task-text"><?=$task->details ?>
             </p>
             <div class="footer-task">

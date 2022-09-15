@@ -82,18 +82,3 @@ ALTER TABLE response
   MODIFY score TINYINT;
 ALTER TABLE response
   MODIFY feedback VARCHAR(255);
-
-UPDATE task SET details = 'Убрать трешку, помыть все и отмыть до блеска' WHERE id = 1;
-UPDATE task SET details = 'Всю мебель (кровать, чемодан и кресло) загрузить и в лучшем виде привезти' WHERE id = 2;
-UPDATE task SET details = 'Покрасить стены в белый' WHERE id = 3;
-UPDATE task SET details = 'Неизвестно что случилось, просто починить, чтобы работал как раньше' WHERE id = 4;
-UPDATE task SET details = 'Аккрутно, красиво и быстро сделать френч' WHERE id = 5;
-UPDATE task SET details = 'Сделать 100 фоток за полчаса на природе или у фонтана' WHERE id = 6;
-
-ALTER TABLE task
-    MODIFY longitude DECIMAL(11,7);
-ALTER TABLE task
-    MODIFY latitude DECIMAL(11,7);
-
-UPDATE task SET latitude = 55.7963352, longitude = 37.9381413 WHERE id < 5;
-UPDATE task SET latitude = 52.6517296, longitude = 90.0885929 WHERE id > 4;

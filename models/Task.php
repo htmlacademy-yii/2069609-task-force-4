@@ -19,6 +19,7 @@ use Yii;
  * @property string|null $date_of_execution
  * @property int $category_id
  * @property string|null $files
+ * @property string $details
  *
  * @property Category $category
  * @property City $city
@@ -27,6 +28,13 @@ use Yii;
  */
 class Task extends \yii\db\ActiveRecord
 {
+    //доступные статусы заданий
+    const STATUS_NEW = 'new';
+    const STATUS_CANCELLED = 'cancelled';
+    const STATUS_AT_WORK = 'work';
+    const STATUS_DONE = 'done';
+    const STATUS_FAILED = 'failed';
+
     /**
      * {@inheritdoc}
      */
@@ -41,12 +49,12 @@ class Task extends \yii\db\ActiveRecord
     public function rules(): array
     {
         return [
-            [['user_id', 'status', 'latitude', 'longitude', 'description', 'category_id'], 'required'],
+            [['user_id', 'status', 'latitude', 'longitude', 'description', 'category_id', 'details'], 'required'],
             [['user_id', 'budget', 'city_id', 'category_id'], 'integer'],
             [['latitude', 'longitude'], 'number'],
             [['date_of_publication', 'date_of_execution'], 'safe'],
             [['status'], 'string', 'max' => 64],
-            [['description', 'files'], 'string', 'max' => 255],
+            [['description', 'files', 'details'], 'string', 'max' => 255],
             [['city_id'], 'exist', 'skipOnError' => true, 'targetClass' => City::class, 'targetAttribute' => ['city_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'id']],
@@ -71,6 +79,7 @@ class Task extends \yii\db\ActiveRecord
             'date_of_execution' => 'Date Of Execution',
             'category_id' => 'Category ID',
             'files' => 'Files',
+            'details' => 'Details'
         ];
     }
 

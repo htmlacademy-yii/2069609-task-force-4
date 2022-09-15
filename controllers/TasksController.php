@@ -6,15 +6,13 @@ use yii\web\Controller;
 
 class TasksController extends Controller
 {
-    public function actionIndex()
+    public function actionIndex(): string
     {
         $query = Task::find();
 
-        $query->where(['status' => 'new']);
+        $query->where(['status' => Task::STATUS_NEW]);
         $query->orderBy('date_of_publication DESC');
         $tasks = $query->all();
         return $this->render('tasks', ['tasks' => $tasks]);
     }
-
-
 }
