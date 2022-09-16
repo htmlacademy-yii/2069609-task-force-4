@@ -61,7 +61,7 @@ class Response extends \yii\db\ActiveRecord
     /**
      * Gets query for [[Task]].
      *
-     * @return \yii\db\ActiveQuery|TaskQuery
+     * @return \yii\db\ActiveQuery
      */
     public function getTask()
     {
@@ -71,19 +71,10 @@ class Response extends \yii\db\ActiveRecord
     /**
      * Gets query for [[User]].
      *
-     * @return \yii\db\ActiveQuery|UserQuery
+     * @return \yii\db\ActiveQuery
      */
     public function getUser()
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
-    }
-
-    /**
-     * {@inheritdoc}
-     * @return ResponseQuery the active query used by this AR class.
-     */
-    public static function find(): ResponseQuery
-    {
-        return new ResponseQuery(get_called_class());
     }
 }
