@@ -2,6 +2,7 @@
 
 namespace app\models\forms;
 
+use app\models\Category;
 use app\models\Task;
 use yii\base\Model;
 
@@ -9,15 +10,25 @@ class TaskSearchForm extends Model {
 
     public $categories;
     public $bonus;
-    public bool $withoutResponses = true;
+    public bool $withoutResponses = false;
     public bool $isDistant = false;
     public $period;
-    const SEARCH_INTERVAL = ['1 час', '12 часов', '24 часа', 'все'];
+
+    const HOUR_1 = '1 час';
+    const HOURS_12 = '12 часов';
+    const HOURS_24 = '24 часа';
+    const ALL_TASKS = 'все';
+    const WITHOUT_RESPONSES = 'Без откликов';
+    const DISTANT_WORK = 'Удаленная работа';
+
+    const SEARCH_INTERVAL = [self::HOUR_1, self::HOURS_12, self::HOURS_24, self::ALL_TASKS];
+
     public function rules(): array
     {
         return [
             [['isDistant', 'withoutResponses'], 'boolean'],
             ['period', 'in', 'range' => self::SEARCH_INTERVAL],
+            ['categories', 'exist', 'targetClass' => Category::class, 'targetAttribute' => ['categories' => 'id']]
         ];
     }
 
@@ -30,14 +41,15 @@ class TaskSearchForm extends Model {
         ];
     }
 
-    function getInterval() {
+    private function getQueryPeriod($query)
+    {
         switch($this->period){
-            case self::SEARCH_INTERVAL[0]: $interval = '<= NOW() - INTERVAL 1 HOUR'; break;
-            case self::SEARCH_INTERVAL[1]: $interval = '<= NOW() - INTERVAL 12 HOUR'; break;
-            case self::SEARCH_INTERVAL[2]: $interval = '<= NOW() - INTERVAL 24 HOUR'; break;
-            case self::SEARCH_INTERVAL[3]: $interval = '>= NOW()';
+            case self::HOUR_1: $interval = '<= NOW() - INTERVAL 1 HOUR'; break;
+            case self::HOURS_12: $interval = '<= NOW() - INTERVAL 12 HOUR'; break;
+            case self::HOURS_24: $interval = '<= NOW() - INTERVAL 24 HOUR'; break;
+            case self::ALL_TASKS: $interval = '>= NOW()'; break;
         }
-        return $interval;
+        return $query->andWhere('date_of_publication ' . $interval);
     }
 
     public function search(): \yii\db\ActiveQuery
@@ -55,7 +67,7 @@ class TaskSearchForm extends Model {
             $query->leftJoin('response', 'response.task_id = null');
         }
         if (in_array($this->period, self::SEARCH_INTERVAL)){
-            $query->andWhere('date_of_publication ' . $this->getInterval());
+            self::getQueryPeriod($query);
         }
         $query->orderBy('date_of_publication DESC');
 

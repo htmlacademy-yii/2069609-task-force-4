@@ -89,4 +89,13 @@ class Category extends \yii\db\ActiveRecord
                 ->orderBy('id ASC')
                 ->all();
     }
+
+    public static function getIdList(){
+        return
+            (new \yii\db\Query())
+                ->select(['id'])
+                ->from('category')
+                ->orderBy('id ASC')
+                ->all();
+    }
 }
