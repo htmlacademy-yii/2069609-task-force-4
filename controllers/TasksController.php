@@ -12,9 +12,10 @@ class TasksController extends Controller
     {
         $categories = Category::getCategoryList();
         $taskSearch = new TaskSearchForm();
-        if (Yii::$app->request->getIsGet()) {
+        if (Yii::$app->request->getIsPost()) {
             $taskSearch->load(Yii::$app->request->get());
         }
+
         $tasks = $taskSearch->search()->all();
         return $this->render('tasks', [
             'tasks' => $tasks,

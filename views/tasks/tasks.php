@@ -57,9 +57,11 @@ use yii\widgets\ActiveForm;
                 <?php $form = ActiveForm::begin([
                     'id' => 'task-form'
                 ]); ?>
-                <h4 class="head-card">Категории</h4>
                 <?php
-                echo $form->field($model, 'categories')->checkboxList(ArrayHelper::map($categories, 'id', 'name')); ?>
+                echo $form->field($model, 'categories', ['options' => ['class' => 'head-card']])->checkboxList(ArrayHelper::map($categories, 'id', 'name'), ['class' => 'form-group checkbox-wrapper control-label']);
+                echo $form->field($model, 'bonus',['options' => ['class' => 'head-card']])->checkboxList(array('Без откликов', 'Удаленная работа'), ['class' => 'form-group checkbox-wrapper control-label']);
+                echo $form->field($model, 'period', ['options' => ['class' => 'head-card']])->dropDownList(TaskSearchForm::SEARCH_INTERVAL, ['class' => 'form-group']) ?>
+                <input type="submit" class="button button--blue" value="Искать">
                 <?php ActiveForm::end(); ?>
             </div>
         </div>
