@@ -79,4 +79,14 @@ class Category extends \yii\db\ActiveRecord
     {
         return $this->hasMany(User::class, ['id' => 'user_id'])->viaTable('executor_category', ['category_id' => 'id']);
     }
+
+    public static function getCategoryList(): array
+    {
+        return
+            (new \yii\db\Query())
+                ->select(['id', 'name'])
+                ->from('category')
+                ->orderBy('id ASC')
+                ->all();
+    }
 }

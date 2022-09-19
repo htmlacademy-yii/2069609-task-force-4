@@ -1,7 +1,14 @@
 <?php
 
+use app\models\forms\TaskSearchForm;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+
 /** @var yii\web\View $this */
 /** @var app\models\Task $tasks */
+/** @var app\models\Category $categories */
+/** @var TaskSearchForm $model */
 ?>
 
 <main class="main-content container">
@@ -47,38 +54,13 @@
     <div class="right-column">
         <div class="right-card black">
             <div class="search-form">
-                <form>
-                    <h4 class="head-card">Категории</h4>
-                    <div class="form-group">
-                        <div class="checkbox-wrapper">
-                            <label class="control-label" for="сourier-services">
-                                <input type="checkbox" id="сourier-services" checked>
-                                Курьерские услуги</label>
-                            <label class="control-label" for="cargo-transportation">
-                                <input id="cargo-transportation" type="checkbox">
-                                Грузоперевозки</label>
-                            <label class="control-label" for="translations">
-                                <input id="translations" type="checkbox">
-                                Переводы</label>
-                        </div>
-                    </div>
-                    <h4 class="head-card">Дополнительно</h4>
-                    <div class="form-group">
-                        <label class="control-label" for="without-performer">
-                            <input id="without-performer" type="checkbox" checked>
-                            Без исполнителя</label>
-                    </div>
-                    <h4 class="head-card">Период</h4>
-                    <div class="form-group">
-                        <label for="period-value"></label>
-                        <select id="period-value">
-                            <option>1 час</option>
-                            <option>12 часов</option>
-                            <option>24 часа</option>
-                        </select>
-                    </div>
-                    <input type="submit" class="button button--blue" value="Искать">
-                </form>
+                <?php $form = ActiveForm::begin([
+                    'id' => 'task-form'
+                ]); ?>
+                <h4 class="head-card">Категории</h4>
+                <?php
+                echo $form->field($model, 'categories')->checkboxList(ArrayHelper::map($categories, 'id', 'name')); ?>
+                <?php ActiveForm::end(); ?>
             </div>
         </div>
     </div>
