@@ -44,12 +44,12 @@ class TaskSearchForm extends Model {
     private function getQueryPeriod($query)
     {
         switch($this->period){
-            case self::HOUR_1: $interval = '<= NOW() - INTERVAL 1 HOUR'; break;
-            case self::HOURS_12: $interval = '<= NOW() - INTERVAL 12 HOUR'; break;
-            case self::HOURS_24: $interval = '<= NOW() - INTERVAL 24 HOUR'; break;
-            case self::ALL_TASKS: $interval = '>= NOW()'; break;
+            case self::HOUR_1: $interval = 'date_of_publication <= NOW() - INTERVAL 1 HOUR'; break;
+            case self::HOURS_12: $interval = 'date_of_publication <= NOW() - INTERVAL 12 HOUR'; break;
+            case self::HOURS_24: $interval = 'date_of_publication <= NOW() - INTERVAL 24 HOUR'; break;
+            case self::ALL_TASKS: $interval = 'date_of_publication >= NOW()'; break;
         }
-        return $query->andWhere('date_of_publication ' . $interval);
+        return $query->andWhere($interval);
     }
 
     public function search(): \yii\db\ActiveQuery
