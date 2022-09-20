@@ -41,15 +41,9 @@ class TaskSearchForm extends Model {
         ];
     }
 
-    private function getQueryPeriod($query)
+    static function getBonusLabels(): array
     {
-        switch($this->period){
-            case self::HOUR_1: $interval = 'date_of_publication <= NOW() - INTERVAL 1 HOUR'; break;
-            case self::HOURS_12: $interval = 'date_of_publication <= NOW() - INTERVAL 12 HOUR'; break;
-            case self::HOURS_24: $interval = 'date_of_publication <= NOW() - INTERVAL 24 HOUR'; break;
-            case self::ALL_TASKS: $interval = 'date_of_publication >= NOW()'; break;
-        }
-        return $query->andWhere($interval);
+        return [self::WITHOUT_RESPONSES, self::DISTANT_WORK];
     }
 
     public function search(): \yii\db\ActiveQuery
@@ -67,7 +61,12 @@ class TaskSearchForm extends Model {
             $query->leftJoin('response', 'response.task_id = null');
         }
         if (in_array($this->period, self::SEARCH_INTERVAL)){
-            self::getQueryPeriod($query);
+            switch($this->period){
+                case self::HOUR_1: $query->andWhere('date_of_publication <= NOW() - INTERVAL 1 HOUR'); break;
+                case self::HOURS_12: $query->andWhere('date_of_publication <= NOW() - INTERVAL 12 HOUR'); break;
+                case self::HOURS_24: $query->andWhere('date_of_publication <= NOW() - INTERVAL 24 HOUR'); break;
+                case self::ALL_TASKS: $query->andWhere('date_of_publication >= NOW()'); break;
+            }
         }
         $query->orderBy('date_of_publication DESC');
 

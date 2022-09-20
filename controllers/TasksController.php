@@ -16,17 +16,17 @@ class TasksController extends Controller
         $query->orderBy('date_of_publication DESC');
         $tasks = $query->all();
 
-        $categories = Category::getCategoryList();
-        $taskSearch = new TaskSearchForm();
-        if (Yii::$app->request->getIsGet()) {
-            $taskSearch->load(Yii::$app->request->get());
-            if ($taskSearch->validate()) {
-                $tasks = $taskSearch->search()->all();
+        $categories = Category::find()->all();
+        $taskForm = new TaskSearchForm();
+        if (Yii::$app->request->getIsPost()) {
+            $taskForm->load(Yii::$app->request->post());
+            if ($taskForm->validate()) {
+                $tasks = $taskForm->search()->all();
             }
         }
         return $this->render('tasks', [
             'tasks' => $tasks,
-            'model' => $taskSearch,
+            'model' => $taskForm,
             'categories' => $categories
         ]);
     }
