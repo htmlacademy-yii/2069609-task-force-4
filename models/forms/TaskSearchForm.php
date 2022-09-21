@@ -9,7 +9,6 @@ use yii\base\Model;
 class TaskSearchForm extends Model {
 
     public $categories;
-    public $bonus;
     public bool $withoutResponses = false;
     public bool $isDistant = false;
     public $period;
@@ -35,7 +34,6 @@ class TaskSearchForm extends Model {
         return [
             'categories' => 'Категории',
             'period' => 'Период',
-            'bonus' => 'Дополнительно',
             'withoutResponses' => 'Без откликов',
             'isDistant' => 'Удаленная работа'
         ];
