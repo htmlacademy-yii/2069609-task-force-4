@@ -58,8 +58,11 @@ use yii\widgets\ActiveForm;
                     'id' => 'task-form'
                 ]); ?>
                 <?php
-                echo $form->field($model, 'categories', ['options' => ['class' => 'head-card']])->checkboxList(ArrayHelper::map($categories, 'id', 'name'), ['class' => 'form-group checkbox-wrapper control-label']);
-                echo $form->field($model, 'bonus',['options' => ['class' => 'head-card']])->checkboxList(TaskSearchForm::getBonusLabels(), ['class' => 'form-group checkbox-wrapper control-label']);
+                echo $form->field($model, 'categories', ['options' => ['class' => 'head-card']])->checkboxList(ArrayHelper::map($categories, 'id', 'name'), ['class' => 'form-group checkbox-wrapper control-label']); ?>
+                <p class="head-card">Дополнительно</p><br>
+                <?php
+                echo $form->field($model, 'withoutResponses')->checkbox(['class' => 'form-group control-label']);
+                echo $form->field($model, 'isDistant')->checkbox(['class' => 'form-group control-label']);
                 echo $form->field($model, 'period', ['options' => ['class' => 'head-card']])->dropDownList(TaskSearchForm::SEARCH_INTERVAL, ['class' => 'form-group']) ?>
                 <input type="submit" class="button button--blue" value="Искать">
                 <?php ActiveForm::end(); ?>
