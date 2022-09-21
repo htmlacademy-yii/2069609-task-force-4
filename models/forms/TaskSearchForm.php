@@ -52,7 +52,7 @@ class TaskSearchForm extends Model {
         $query->where(['status' => Task::STATUS_NEW]);
 
         if ($this->isDistant) {
-            $query->andWhere('latitude is null');
+            $query->andWhere('latitude is null or city is null');
         }
         if ($this->categories){
             $query->andWhere(['in', 'category_id', $this->categories]);
@@ -62,10 +62,10 @@ class TaskSearchForm extends Model {
         }
         if (in_array($this->period, self::SEARCH_INTERVAL)){
             switch($this->period){
-                case self::HOUR_1: $query->andWhere('date_of_publication <= NOW() - INTERVAL 1 HOUR'); break;
-                case self::HOURS_12: $query->andWhere('date_of_publication <= NOW() - INTERVAL 12 HOUR'); break;
-                case self::HOURS_24: $query->andWhere('date_of_publication <= NOW() - INTERVAL 24 HOUR'); break;
-                case self::ALL_TASKS: $query->andWhere('date_of_publication >= NOW()'); break;
+                case self::HOUR_1: $query->andWhere('date_of_publication >= NOW() - INTERVAL 1 HOUR'); break;
+                case self::HOURS_12: $query->andWhere('date_of_publication >= NOW() - INTERVAL 12 HOUR'); break;
+                case self::HOURS_24: $query->andWhere('date_of_publication >= NOW() - INTERVAL 24 HOUR'); break;
+                case self::ALL_TASKS: $query->andWhere('date_of_publication <= NOW()'); break;
             }
         }
         $query->orderBy('date_of_publication DESC');
