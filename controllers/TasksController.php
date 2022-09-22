@@ -24,10 +24,14 @@ class TasksController extends Controller
                 $tasks = $taskForm->search()->all();
             }
         }
-        return $this->render('tasks', [
+        return $this->render('index', [
             'tasks' => $tasks,
             'model' => $taskForm,
             'categories' => $categories
         ]);
+    }
+
+    public function actionView($id){
+        return $this->render('view');
     }
 }
