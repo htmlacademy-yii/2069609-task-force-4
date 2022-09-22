@@ -20,6 +20,7 @@ $this->registerMetaTag(['name' => 'keywords', 'content' => $this->params['meta_k
 $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@web/favicon.ico']);
 ?>
 
+<?php $this->beginPage() ?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -27,7 +28,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title><?= Html::encode($this->title) ?></title>
-    <link rel="stylesheet" href="css/style.css">
+    <?php $this->head() ?>
 </head>
 <body>
 <?php $this->beginBody()?>
@@ -83,3 +84,4 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
 <?php $this->endBody() ?>
 </body>
 </html>
+<?php $this->endPage() ?>
