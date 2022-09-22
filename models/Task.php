@@ -38,6 +38,14 @@ class Task extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+CONST TASK_STATUS_LABELS = [
+    self::STATUS_NEW => 'Новое',
+    self::STATUS_CANCELLED => 'Отменено',
+    self::STATUS_AT_WORK => 'В работе',
+    self::STATUS_DONE => 'Выполнено',
+    self::STATUS_FAILED => 'Провалено'
+];
+
     public static function tableName(): string
     {
         return 'task';

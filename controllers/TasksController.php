@@ -3,9 +3,11 @@ namespace app\controllers;
 
 use app\models\Category;
 use app\models\forms\TaskSearchForm;
+use app\models\Response;
 use app\models\Task;
 use Yii;
 use yii\web\Controller;
+use yii\web\NotFoundHttpException;
 
 class TasksController extends Controller
 {
@@ -31,7 +33,18 @@ class TasksController extends Controller
         ]);
     }
 
+    /**
+     * @throws NotFoundHttpException
+     */
     public function actionView($id){
-        return $this->render('view');
+        $task = Task::findOne($id);
+        if (!$task) {
+            throw new NotFoundHttpException('Task not found');
+        }
+        $responses = Response::find()->where(['task_id' => $id])->all();
+        return $this->render('view', [
+            'task' => $task,
+            'responses' => $responses
+        ]);
     }
 }
