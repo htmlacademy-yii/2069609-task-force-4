@@ -13,12 +13,22 @@ class TaskSearchForm extends Model {
     public bool $isDistant = false;
     public $period;
 
-    const HOUR_1 = '1 час';
-    const HOURS_12 = '12 часов';
-    const HOURS_24 = '24 часа';
-    const ALL_TASKS = 'все';
+    const KEY_HOUR_1 = '1 hour';
+    const KEY_HOURS_12 = '12 hours';
+    const KEY_HOURS_24 = '24 hours';
+    const KEY_ALL_TASKS = 'all';
 
-    const SEARCH_INTERVAL = [self::HOUR_1, self::HOURS_12, self::HOURS_24, self::ALL_TASKS];
+    const VALUE_HOUR_1 = '1 час';
+    const VALUE_HOURS_12 = '12 часов';
+    const VALUE_HOURS_24 = '24 часа';
+    const VALUE_ALL_TASKS = 'все';
+
+    const SEARCH_INTERVAL = [
+        self::KEY_HOUR_1 => self::VALUE_HOUR_1,
+        self::KEY_HOURS_12 => self::VALUE_HOURS_12,
+        self::KEY_HOURS_24 => self::VALUE_HOURS_24,
+        self::KEY_ALL_TASKS => self::VALUE_ALL_TASKS
+    ];
 
     public function rules(): array
     {
@@ -55,10 +65,10 @@ class TaskSearchForm extends Model {
         }
         if (in_array($this->period, array_keys(self::SEARCH_INTERVAL))){
             switch($this->period){
-                case 0: $query->andWhere('date_of_publication >= NOW() - INTERVAL 1 HOUR'); break;
-                case 1: $query->andWhere('date_of_publication >= NOW() - INTERVAL 12 HOUR'); break;
-                case 2: $query->andWhere('date_of_publication >= NOW() - INTERVAL 24 HOUR'); break;
-                case 3: $query->andWhere('date_of_publication <= NOW()'); break;
+                case self::KEY_HOUR_1: $query->andWhere('date_of_publication >= NOW() - INTERVAL 1 HOUR'); break;
+                case self::KEY_HOURS_12: $query->andWhere('date_of_publication >= NOW() - INTERVAL 12 HOUR'); break;
+                case self::KEY_HOURS_24: $query->andWhere('date_of_publication >= NOW() - INTERVAL 24 HOUR'); break;
+                case self::KEY_ALL_TASKS: $query->andWhere('date_of_publication <= NOW()'); break;
             }
         }
         $query->orderBy('date_of_publication DESC');

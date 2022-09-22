@@ -63,7 +63,7 @@ use yii\widgets\ActiveForm;
                 <?php
                 echo $form->field($model, 'withoutResponses')->checkbox(['class' => 'form-group control-label']);
                 echo $form->field($model, 'isDistant')->checkbox(['class' => 'form-group control-label']);
-                echo $form->field($model, 'period', ['options' => ['class' => 'head-card']])->dropDownList(TaskSearchForm::SEARCH_INTERVAL, ['class' => 'form-group']) ?>
+                echo $form->field($model, 'period', ['options' => ['class' => 'head-card']])->dropDownList(TaskSearchForm::SEARCH_INTERVAL, ['class' => 'form-group', 'options'=>[TaskSearchForm::KEY_ALL_TASKS => ['Selected'=>true]]]) ?>
                 <input type="submit" class="button button--blue" value="Искать">
                 <?php ActiveForm::end(); ?>
             </div>
