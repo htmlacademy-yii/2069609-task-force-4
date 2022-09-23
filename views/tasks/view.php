@@ -5,6 +5,8 @@
 /** @var yii\web\View $this */
 
 use app\models\Task;
+use yii\helpers\Url;
+
 ?>
 <main class="main-content container">
     <div class="left-column">
@@ -27,12 +29,12 @@ use app\models\Task;
         <div class="response-card">
             <img class="customer-photo" src="<?php echo Yii::$app->request->baseUrl; ?>/img/man-glasses.png" width="146" height="156" alt="Фото заказчиков">
             <div class="feedback-wrapper">
-                <a href="<?=Yii::$app->createUrl(['user/view', 'id' => $response->user->id]) ?>" class="link link--block link--big"><?=$response->user->name ?></a>
+                <a href="<?= Url::to(['user/view', 'id' => $response->user->id]) ?>" class="link link--block link--big"><?=$response->user->name ?></a>
 
                 <div class="response-wrapper">
                         <div class="stars-rating small">
 
-                            <?php $i = 0; while ($i < $response->user->rating) { ?>
+                            <?php $i = 0; while ($i < round($response->user->rating)) { ?>
                             <span class="fill-star">&nbsp;</span>
                             <?php $i++; } ?>
                             <?php while ($i < 5) { ?>
@@ -40,7 +42,7 @@ use app\models\Task;
                             <?php $i++; } ?>
 
                         </div>
-                        <p class="reviews">2 <span>отзыва</span></p>
+                        <p class="reviews"><?=Task::getCountFeedback($task->user_id) ?> <span>отзыва</span></p>
                 </div>
 
                 <p class="response-message">
