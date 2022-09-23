@@ -48,8 +48,8 @@ $config = [
             'showScriptName' => false,
             'enableStrictParsing' => false,
             'rules' => [
-                'tasks/view/<id:\d+>' => 'tasks/view',
-                'user/view/<id:\d+>' => 'user/view'
+                '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
+                '<controller:\w+>/<action:\w+>' => '<controller>/<action>'
             ],
         ],
     ],

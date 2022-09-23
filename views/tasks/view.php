@@ -27,7 +27,7 @@ use app\models\Task;
         <div class="response-card">
             <img class="customer-photo" src="<?php echo Yii::$app->request->baseUrl; ?>/img/man-glasses.png" width="146" height="156" alt="Фото заказчиков">
             <div class="feedback-wrapper">
-                <a href="#" class="link link--block link--big"><?=$response->user->name ?></a>
+                <a href="<?=Yii::$app->createUrl(['user/view', 'id' => $response->user->id]) ?>" class="link link--block link--big"><?=$response->user->name ?></a>
 
                 <div class="response-wrapper">
                         <div class="stars-rating small">

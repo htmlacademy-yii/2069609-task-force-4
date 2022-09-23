@@ -128,4 +128,13 @@ class User extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Task::class, ['user_id' => 'id']);
     }
+
+    public function getStatusLabel(){
+        if ($this->availability === true) {
+            $status = 'Готов взять задание в работу';
+        } else {
+            $status = 'Занят';
+        }
+        return $status;
+    }
 }
