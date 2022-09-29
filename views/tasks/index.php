@@ -2,7 +2,7 @@
 
 use app\models\forms\TaskSearchForm;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
 /** @var yii\web\View $this */
@@ -26,7 +26,7 @@ use yii\widgets\ActiveForm;
             <div class="footer-task">
                 <p class="info-text town-text"><?=$task->city->name ?></p>
                 <p class="info-text category-text"><?=$task->category->name ?></p>
-                <a href="/tasks/view/<?=$task->id ?>" class="button button--black">Смотреть Задание</a>
+                <a href="<?= Url::to(['tasks/view', 'id' => $task->id]) ?>" class="button button--black">Смотреть Задание</a>
             </div>
         </div>
         <?php endforeach; ?>

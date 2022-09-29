@@ -1,7 +1,6 @@
 <?php
 namespace app\controllers;
 use app\models\ExecutorCategory;
-use app\models\Response;
 use app\models\Task;
 use app\models\User;
 use yii\web\Controller;
@@ -21,13 +20,9 @@ class UserController extends Controller
         if (!$user) {
             throw new NotFoundHttpException('User not found');
         }
-        $categories = ExecutorCategory::findAll(['user_id' => $id]);
-        $responses = Response::getResponses($id);
 
         return $this->render('view', [
-            'user' => $user,
-            'categories' => $categories,
-            'responses' => $responses
+            'user' => $user
         ]);
     }
 }

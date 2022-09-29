@@ -1,11 +1,11 @@
 <?php
 
 /** @var app\models\Task $task*/
-/** @var app\models\Response $responses*/
 /** @var yii\web\View $this */
 
 use app\models\Task;
 use yii\helpers\Url;
+use app\components\RatingWidget;
 
 ?>
 <main class="main-content container">
@@ -25,7 +25,7 @@ use yii\helpers\Url;
             <p class="map-address">Новый арбат, 23, к. 1</p>
         </div>
         <h4 class="head-regular">Отклики на задание</h4>
-        <?php foreach ($responses as $response): ?>
+        <?php foreach ($task->responses as $response): ?>
         <div class="response-card">
             <img class="customer-photo" src="<?php echo Yii::$app->request->baseUrl; ?>/img/man-glasses.png" width="146" height="156" alt="Фото заказчиков">
             <div class="feedback-wrapper">
@@ -33,14 +33,7 @@ use yii\helpers\Url;
 
                 <div class="response-wrapper">
                         <div class="stars-rating small">
-
-                            <?php $i = 0; while ($i < round($response->user->rating)) { ?>
-                            <span class="fill-star">&nbsp;</span>
-                            <?php $i++; } ?>
-                            <?php while ($i < 5) { ?>
-                            <span>&nbsp;</span>
-                            <?php $i++; } ?>
-
+                            <?= RatingWidget::widget(['rating' => $response->user->rating]) ?>
                         </div>
                         <p class="reviews"><?=Task::getCountFeedback($task->user_id) ?> <span>отзыва</span></p>
                 </div>

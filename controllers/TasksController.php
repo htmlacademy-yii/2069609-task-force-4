@@ -44,11 +44,9 @@ class TasksController extends Controller
         if (!$task) {
             throw new NotFoundHttpException('Task not found');
         }
-        $responses = Response::find()->where(['task_id' => $id])->all();
 
         return $this->render('view', [
-            'task' => $task,
-            'responses' => $responses
+            'task' => $task
         ]);
     }
 }

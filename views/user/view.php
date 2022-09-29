@@ -1,10 +1,9 @@
 <?php
 /** @var yii\web\View $this */
 /** @var app\models\User $user */
-/** @var app\models\ExecutorCategory $categories */
-/** @var app\models\Response $responses */
 
 use app\models\Task;
+use app\components\RatingWidget;
 
 ?>
 
@@ -16,12 +15,7 @@ use app\models\Task;
                 <img class="card-photo" src="<?php echo Yii::$app->request->baseUrl; ?>/img/man-glasses.png" width="191" height="190" alt="Фото пользователя">
                 <div class="card-rate">
                     <div class="stars-rating small">
-                    <?php $i = 0; while ($i < round($user->rating)) { ?>
-                        <span class="fill-star">&nbsp;</span>
-                        <?php $i++; } ?>
-                    <?php while ($i < 5) { ?>
-                        <span>&nbsp;</span>
-                        <?php $i++; } ?>
+                        <?= RatingWidget::widget(['rating' => $user->rating]) ?>
                     </div>
                     <span class="current-rate"><?=$user->rating; ?></span>
                 </div>
@@ -34,9 +28,10 @@ use app\models\Task;
             <div class="specialization">
                 <p class="head-info">Специализации</p>
                 <ul class="special-list">
-                    <?php foreach ($categories as $category): ?>
+                    <?php //foreach ($categories as $category): ?>
+                    <?php   foreach ($user->categories as $category): ?>
                     <li class="special-item">
-                        <a href="#" class="link link--regular"><?=$category->category->name ?></a>
+                        <a href="#" class="link link--regular"><?=$category->name ?></a>
                     </li>
                     <?php endforeach; ?>
                 </ul>
@@ -46,14 +41,14 @@ use app\models\Task;
                 <p class="bio-info"><span class="country-info">Россия</span>, <span class="town-info"><?=$user->city->name ?></span>, <span class="age-info">30</span> лет</p>
             </div>
         </div>
-        <?php if ($responses): ?>
+        <?php if ($user->activeResponses): ?>
         <h4 class="head-regular">Отзывы заказчиков</h4>
-        <?php foreach ($responses as $response): ?>
-        <div class="response-card">
+        <?php foreach ($user->responses as $response): ?>
+        <div class="response-card"
             <img class="customer-photo" src="<?php echo Yii::$app->request->baseUrl; ?>/img/man-coat.png" width="120" height="127" alt="Фото заказчиков">
             <div class="feedback-wrapper">
                 <p class="feedback"><?=$response->feedback ?></p>
-                <p class="task">Задание «<a href="#" class="link link--small"><?=$response->task->name ?></a>» выполнено</p>
+                <p class="task">Задание «<a href="#" class="link link--small"><?=$response->task->description ?></a>» выполнено</p>
             </div>
             <div class="feedback-wrapper">
                 <div class="stars-rating small"><span class="fill-star">&nbsp;</span><span class="fill-star">&nbsp;</span><span class="fill-star">&nbsp;</span><span class="fill-star">&nbsp;</span><span>&nbsp;</span></div>
@@ -69,11 +64,11 @@ use app\models\Task;
             <h4 class="head-card">Статистика исполнителя</h4>
             <dl class="black-list">
                 <dt>Всего заказов</dt>
-                <dd><?= Task::getCountDoneTask($user->id) ?> выполнено, <?= Task::getCountFailedTask($user->id) ?> провалено</dd>
+                <dd><?= $user->getCountTaskByStatus(Task::STATUS_NEW) ?> выполнено, <?= $user->getCountTaskByStatus(Task::STATUS_FAILED) ?> провалено</dd>
                 <dt>Место в рейтинге</dt>
                 <dd>25 место</dd>
                 <dt>Дата регистрации</dt>
-                <dd><?=date('d.m.y', strtotime($user->dt_add)) ?></dd>
+                <dd><?=Yii::$app->formatter->asDate($user->dt_add) ?></dd>
                 <dt>Статус</dt>
                 <dd><?=$user->getStatusLabel() ?></dd>
             </dl>
@@ -87,7 +82,7 @@ use app\models\Task;
                 <li class="enumeration-item">
                     <a href="#" class="link link--block link--email"><?=$user->email ?></a>
                 </li>
-                <?php if (!$user->telegram): ?>
+                <?php if ($user->telegram): ?>
                 <li class="enumeration-item">
                     <a href="#" class="link link--block link--tg"><?=$user->telegram ?></a>
                 </li>
