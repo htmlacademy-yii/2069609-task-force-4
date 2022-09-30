@@ -17,10 +17,10 @@ use yii\widgets\ActiveForm;
         <?php foreach ($tasks as $task): ?>
         <div class="task-card">
             <div class="header-task">
-                <a  href="#" class="link link--block link--big"><?=$task->description ?></a>
+                <a  href="<?= Url::to(['tasks/view', 'id' => $task->id]) ?>" class="link link--block link--big"><?=$task->description ?></a>
                 <p class="price price--task"><?=$task->budget ?> ₽</p>
             </div>
-            <p class="info-text"><span class="current-time"><?=Yii::$app->formatter->asRelativeTime(strtotime($task->date_of_publication)) ?></span></p>
+            <p class="info-text"><span class="current-time"><?=Yii::$app->formatter->asRelativeTime($task->date_of_publication) ?></span></p>
             <p class="task-text"><?=$task->details ?>
             </p>
             <div class="footer-task">

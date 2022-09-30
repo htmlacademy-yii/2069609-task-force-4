@@ -131,20 +131,4 @@ CONST TASK_STATUS_LABELS = [
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
-    static function getCountDoneTask($user_id){
-        return Task::find()->where([
-            'user_id' => $user_id,
-            'status' => Task::STATUS_DONE])->count();
-    }
-
-    static function getCountFailedTask($user_id){
-        return Task::find()->where([
-            'user_id' => $user_id,
-            'status' => Task::STATUS_FAILED])->count();
-    }
-
-    static function getCountFeedback($user_id){
-        return (self::getCountFailedTask($user_id) + self::getCountDoneTask($user_id));
-    }
-
 }

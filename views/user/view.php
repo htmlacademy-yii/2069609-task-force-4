@@ -3,7 +3,8 @@
 /** @var app\models\User $user */
 
 use app\models\Task;
-use app\components\RatingWidget;
+use app\widgets\RatingWidget;
+use yii\helpers\Url;
 
 ?>
 
@@ -12,7 +13,7 @@ use app\components\RatingWidget;
         <h3 class="head-main"><?=$user->name ?></h3>
         <div class="user-card">
             <div class="photo-rate">
-                <img class="card-photo" src="<?php echo Yii::$app->request->baseUrl; ?>/img/man-glasses.png" width="191" height="190" alt="Фото пользователя">
+                <img class="card-photo" src="<?=Yii::$app->request->baseUrl; ?>/img/man-glasses.png" width="191" height="190" alt="Фото пользователя">
                 <div class="card-rate">
                     <div class="stars-rating small">
                         <?= RatingWidget::widget(['rating' => $user->rating]) ?>
@@ -28,7 +29,6 @@ use app\components\RatingWidget;
             <div class="specialization">
                 <p class="head-info">Специализации</p>
                 <ul class="special-list">
-                    <?php //foreach ($categories as $category): ?>
                     <?php   foreach ($user->categories as $category): ?>
                     <li class="special-item">
                         <a href="#" class="link link--regular"><?=$category->name ?></a>
@@ -48,11 +48,13 @@ use app\components\RatingWidget;
             <img class="customer-photo" src="<?php echo Yii::$app->request->baseUrl; ?>/img/man-coat.png" width="120" height="127" alt="Фото заказчиков">
             <div class="feedback-wrapper">
                 <p class="feedback"><?=$response->feedback ?></p>
-                <p class="task">Задание «<a href="#" class="link link--small"><?=$response->task->description ?></a>» выполнено</p>
+                <p class="task">Задание «<a href="<?= Url::to(['tasks/view', 'id' => $response->user->id]) ?>" class="link link--small"><?=$response->task->description ?></a>» выполнено</p>
             </div>
             <div class="feedback-wrapper">
-                <div class="stars-rating small"><span class="fill-star">&nbsp;</span><span class="fill-star">&nbsp;</span><span class="fill-star">&nbsp;</span><span class="fill-star">&nbsp;</span><span>&nbsp;</span></div>
-                <p class="info-text"><span class="current-time">25 минут </span>назад</p>
+                <div class="stars-rating small">
+                    <?= RatingWidget::widget(['rating' => $response->score]) ?>
+                </div>
+                <p class="info-text"><span class="current-time"><?=Yii::$app->formatter->asRelativeTime($response->date_feedback) ?></span></p>
             </div>
         </div>
         <?php endforeach; ?>

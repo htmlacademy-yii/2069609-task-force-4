@@ -5,7 +5,7 @@
 
 use app\models\Task;
 use yii\helpers\Url;
-use app\components\RatingWidget;
+use app\widgets\RatingWidget;
 
 ?>
 <main class="main-content container">
@@ -27,7 +27,7 @@ use app\components\RatingWidget;
         <h4 class="head-regular">Отклики на задание</h4>
         <?php foreach ($task->responses as $response): ?>
         <div class="response-card">
-            <img class="customer-photo" src="<?php echo Yii::$app->request->baseUrl; ?>/img/man-glasses.png" width="146" height="156" alt="Фото заказчиков">
+            <img class="customer-photo" src="<?= Yii::$app->request->baseUrl; ?>/img/man-glasses.png" width="146" height="156" alt="Фото заказчиков">
             <div class="feedback-wrapper">
                 <a href="<?= Url::to(['user/view', 'id' => $response->user->id]) ?>" class="link link--block link--big"><?=$response->user->name ?></a>
 
@@ -35,7 +35,7 @@ use app\components\RatingWidget;
                         <div class="stars-rating small">
                             <?= RatingWidget::widget(['rating' => $response->user->rating]) ?>
                         </div>
-                        <p class="reviews"><?=Task::getCountFeedback($task->user_id) ?> <span>отзыва</span></p>
+                        <p class="reviews"><?=$response->user->getCountTaskByStatus(Task::STATUS_NEW) + $response->user->getCountTaskByStatus(Task::STATUS_FAILED)?> <span>отзыва</span></p>
                 </div>
 
                 <p class="response-message">
@@ -43,7 +43,7 @@ use app\components\RatingWidget;
                 </p>
             </div>
             <div class="feedback-wrapper">
-                <p class="info-text"><span class="current-time"><?=Yii::$app->formatter->asRelativeTime(strtotime($response->date_add)) ?></span></p>
+                <p class="info-text"><span class="current-time"><?=Yii::$app->formatter->asRelativeTime($response->date_add) ?></span></p>
                 <p class="price price--small"><?=$response->price ?> ₽</p>
             </div>
 
