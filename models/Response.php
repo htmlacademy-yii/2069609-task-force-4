@@ -77,4 +77,11 @@ class Response extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
+
+    static function getResponses($user_id){
+        return Response::find()->where([
+            'user_id' => $user_id,
+            'feedback' => !null
+            ])->all();
+    }
 }
