@@ -1,7 +1,6 @@
 <?php
 namespace app\controllers;
-use app\models\ExecutorCategory;
-use app\models\Task;
+
 use app\models\User;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;

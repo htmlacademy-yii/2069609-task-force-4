@@ -38,6 +38,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
         <a href='#' class="header-logo">
             <img class="logo-image" src="<?=Yii::$app->request->baseUrl; ?>/img/logotype.png" width=227 height=60 alt="taskforce"/>
         </a>
+        <?php if (Yii::$app->request->pathInfo !== 'registration'): ?>
         <div class="nav-wrapper">
             <ul class="nav-list">
                 <li class="list-item list-item--active">
@@ -76,6 +77,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
             </div>
         </div>
     </div>
+    <?php endif; ?>
 </header>
 
 <div class="main-container">
