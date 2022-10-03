@@ -9,14 +9,14 @@ use yii\web\Controller;
 class RegistrationController extends Controller
 {
     public function actionIndex(){
-        $user = new RegistrationForm();
+        $userForm = new RegistrationForm();
         if (Yii::$app->request->getIsPost()) {
-            $user->load(Yii::$app->request->post());
-            if ($user->validate()) {
-                $user->createUser();
+            $userForm->load(Yii::$app->request->post());
+            if ($userForm->validate()) {
+                $userForm->createUser();
                 $this->goHome();
             }
         }
-        return $this->render('index', ['model' => $user]);
+        return $this->render('index', ['model' => $userForm]);
     }
 }

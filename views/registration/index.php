@@ -17,12 +17,12 @@ use yii\base\ErrorException;
                 'id' => 'registration-form'
             ]); ?>
                 <h3 class="head-main head-task">Регистрация нового пользователя</h3>
-                    <?= $form->field($model, 'name', ['options' => ['class' => 'form-group control-label']]) ?>
+                    <?= $form->field($model, 'name', ['options' => ['class' => 'form-group']]) ?>
                     <?= $form->field($model, 'email', ['options' => ['class' => 'half-wrapper form-group control-label']]) ?>
                     <?= $form->field($model, 'city', ['options' => ['class' => 'form-group']])->dropDownList(ArrayHelper::map(City::find()->all(), 'id', 'name'), ['class' => 'form-group checkbox-wrapper control-label']) ?>
                     <?= $form->field($model, 'password', ['options' => ['class' => 'half-wrapper form-group control-label']])->passwordInput() ?>
                     <?= $form->field($model, 'password_repeat', ['options' => ['class' => 'half-wrapper form-group control-label']])->passwordInput() ?>
-                    <?= $form->field($model, 'role', ['options' => ['class' => 'form-group']])->checkbox(['class' => 'control-label checkbox-label']) ?>
+                    <?= $form->field($model, 'isExecutor', ['options' => ['class' => 'form-group']])->checkbox(['class' => 'control-label checkbox-label']) ?>
 
                 <input type="submit" class="button button--blue" value="Создать аккаунт">
             <?php ActiveForm::end(); ?>
