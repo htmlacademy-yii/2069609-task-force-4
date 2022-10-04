@@ -14,7 +14,7 @@ class RegistrationForm extends Model
     public $email;
     public $city;
     public $password;
-    public $password_repeat;
+    public $passwordRepeat;
     public bool $isExecutor = false;
 
     const ROLE_EXECUTOR = 'executor';
@@ -22,13 +22,13 @@ class RegistrationForm extends Model
     public function rules(): array
     {
         return [
-            [['name', 'email', 'city', 'password', 'password_repeat', 'isExecutor'], 'required'],
+            [['name', 'email', 'city', 'password', 'passwordRepeat', 'isExecutor'], 'required'],
             ['name', 'string'],
             ['email', 'email'],
             ['email', 'unique', 'targetClass' => User::class, 'message' => 'Пользователь с данным Email уже существует'],
             ['city', 'exist', 'targetClass' => City::class, 'targetAttribute' => ['city' => 'id']],
             ['password', 'string', 'min' => 8, 'max' => 64],
-            ['password_repeat', 'compare', 'compareAttribute' => 'password'],
+            ['passwordRepeat', 'compare', 'compareAttribute' => 'password'],
             ['isExecutor', 'boolean'],
         ];
     }
@@ -40,7 +40,7 @@ class RegistrationForm extends Model
             'email' => 'Email',
             'city' => 'Город',
             'password' => 'Пароль',
-            'password_repeat' => 'Повтор пароля',
+            'passwordRepeat' => 'Повтор пароля',
             'isExecutor' => 'я собираюсь откликаться на заказы'
         ];
     }

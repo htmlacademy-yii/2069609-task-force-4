@@ -21,7 +21,7 @@ use yii\base\ErrorException;
                     <?= $form->field($model, 'email', ['options' => ['class' => 'half-wrapper form-group control-label']]) ?>
                     <?= $form->field($model, 'city', ['options' => ['class' => 'form-group']])->dropDownList(ArrayHelper::map(City::find()->all(), 'id', 'name'), ['class' => 'form-group checkbox-wrapper control-label']) ?>
                     <?= $form->field($model, 'password', ['options' => ['class' => 'half-wrapper form-group control-label']])->passwordInput() ?>
-                    <?= $form->field($model, 'password_repeat', ['options' => ['class' => 'half-wrapper form-group control-label']])->passwordInput() ?>
+                    <?= $form->field($model, 'passwordRepeat', ['options' => ['class' => 'half-wrapper form-group control-label']])->passwordInput() ?>
                     <?= $form->field($model, 'isExecutor', ['options' => ['class' => 'form-group']])->checkbox(['class' => 'control-label checkbox-label']) ?>
 
                 <input type="submit" class="button button--blue" value="Создать аккаунт">
