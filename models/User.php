@@ -20,6 +20,9 @@ use Yii;
  * @property int|null $rating
  * @property int|null $availability
  * @property int|null $permission
+ * @property string $avatar
+ * @property string $description
+ *
  *
  * @property Category[] $categories
  * @property City $city
@@ -75,6 +78,8 @@ class User extends \yii\db\ActiveRecord
             'rating' => 'Rating',
             'availability' => 'Availability',
             'permission' => 'Permission',
+            'description' => 'Description',
+            'avatar' => 'Avatar'
         ];
     }
 

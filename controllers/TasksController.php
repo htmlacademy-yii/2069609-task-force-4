@@ -3,7 +3,6 @@ namespace app\controllers;
 
 use app\models\Category;
 use app\models\forms\TaskSearchForm;
-use app\models\Response;
 use app\models\Task;
 use Yii;
 use yii\web\Controller;
