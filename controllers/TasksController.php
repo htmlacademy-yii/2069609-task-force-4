@@ -5,10 +5,9 @@ use app\models\Category;
 use app\models\forms\TaskSearchForm;
 use app\models\Task;
 use Yii;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
-class TasksController extends Controller
+class TasksController extends SecuredController
 {
     public function actionIndex(): string
     {

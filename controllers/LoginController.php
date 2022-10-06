@@ -1,13 +1,13 @@
 <?php
 
 namespace app\controllers;
-use app\models\forms\RegistrationForm;
-use app\models\User;
+
+use app\models\forms\LoginForm;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 
-class RegistrationController extends Controller
+class LoginController extends Controller
 {
     public function behaviors()
     {
@@ -26,15 +26,20 @@ class RegistrationController extends Controller
         ];
     }
 
-    public function actionIndex(){
-        $userForm = new RegistrationForm();
+    public function actionIndex()
+    {
+        $this->layout = 'landing';
+        $loginForm = new LoginForm();
+
         if (Yii::$app->request->getIsPost()) {
-            $userForm->load(Yii::$app->request->post());
-            if ($userForm->validate()) {
-                $userForm->createUser();
+            $loginForm->load(Yii::$app->request->post());
+
+            if ($loginForm->validate()) {
+                $user = $loginForm->getUser();
+                Yii::$app->user->login($user);
                 return $this->goHome();
             }
         }
-        return $this->render('index', ['model' => $userForm]);
+        return $this->render('index', ['model' => $loginForm]);
     }
 }
