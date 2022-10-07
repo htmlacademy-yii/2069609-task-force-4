@@ -24,6 +24,7 @@ class TasksController extends SecuredController
                 $tasks = $taskForm->search()->all();
             }
         }
+
         return $this->render('index', [
             'tasks' => $tasks,
             'model' => $taskForm,
