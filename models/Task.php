@@ -3,6 +3,8 @@
 namespace app\models;
 
 use Yii;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "task".
@@ -18,15 +20,15 @@ use Yii;
  * @property string $description
  * @property string|null $date_of_execution
  * @property int $category_id
- * @property string|null $files
  * @property string $details
  *
  * @property Category $category
  * @property City $city
  * @property Response[] $responses
  * @property User $user
+ * @property File[] $files
  */
-class Task extends \yii\db\ActiveRecord
+class Task extends ActiveRecord
 {
     //доступные статусы заданий
     const STATUS_NEW = 'new';
@@ -35,10 +37,7 @@ class Task extends \yii\db\ActiveRecord
     const STATUS_DONE = 'done';
     const STATUS_FAILED = 'failed';
 
-    /**
-     * {@inheritdoc}
-     */
-CONST TASK_STATUS_LABELS = [
+    CONST TASK_STATUS_LABELS = [
     self::STATUS_NEW => 'Новое',
     self::STATUS_CANCELLED => 'Отменено',
     self::STATUS_AT_WORK => 'В работе',
@@ -46,6 +45,9 @@ CONST TASK_STATUS_LABELS = [
     self::STATUS_FAILED => 'Провалено'
 ];
 
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName(): string
     {
         return 'task';
@@ -57,12 +59,12 @@ CONST TASK_STATUS_LABELS = [
     public function rules(): array
     {
         return [
-            [['user_id', 'status', 'latitude', 'longitude', 'description', 'category_id', 'details'], 'required'],
+            [['user_id', 'status', 'description', 'category_id', 'details'], 'required'],
             [['user_id', 'budget', 'city_id', 'category_id'], 'integer'],
             [['latitude', 'longitude'], 'number'],
             [['date_of_publication', 'date_of_execution'], 'safe'],
             [['status'], 'string', 'max' => 64],
-            [['description', 'files', 'details'], 'string', 'max' => 255],
+            [['description', 'details'], 'string', 'max' => 255],
             [['city_id'], 'exist', 'skipOnError' => true, 'targetClass' => City::class, 'targetAttribute' => ['city_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'id']],
@@ -86,7 +88,6 @@ CONST TASK_STATUS_LABELS = [
             'description' => 'Description',
             'date_of_execution' => 'Date Of Execution',
             'category_id' => 'Category ID',
-            'files' => 'Files',
             'details' => 'Details'
         ];
     }
@@ -94,7 +95,7 @@ CONST TASK_STATUS_LABELS = [
     /**
      * Gets query for [[Category]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getCategory()
     {
@@ -104,7 +105,7 @@ CONST TASK_STATUS_LABELS = [
     /**
      * Gets query for [[City]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getCity()
     {
@@ -114,7 +115,7 @@ CONST TASK_STATUS_LABELS = [
     /**
      * Gets query for [[Responses]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getResponses()
     {
@@ -124,11 +125,21 @@ CONST TASK_STATUS_LABELS = [
     /**
      * Gets query for [[User]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getUser()
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
+    }
+
+    /**
+     * Gets query for [[Files]].
+     *
+     * @return ActiveQuery
+     */
+    public function getFiles()
+    {
+        return $this->hasMany(File::class, ['task_id' => 'id']);
     }
 
 }
