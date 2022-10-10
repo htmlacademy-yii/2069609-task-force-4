@@ -5,14 +5,36 @@ use app\models\Category;
 use app\models\forms\TaskCreateForm;
 use app\models\forms\TaskSearchForm;
 use app\models\Task;
+use app\models\User;
+use Exception;
 use Yii;
+use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
+use yii\web\ServerErrorHttpException;
 use yii\web\UploadedFile;
 
 /** @var TaskCreateForm $model */
 
 class TasksController extends SecuredController
 {
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => ['create'],
+                'rules' => [
+                    [   'allow' => true,
+                        'actions' => ['create'],
+                        'matchCallback' => function () {
+                            return Yii::$app->user->identity->role == User::ROLE_CUSTOMER;
+                        },
+                    ]
+                ]
+            ]
+        ];
+    }
+
     public function actionIndex(): string
     {
         $query = Task::find();
@@ -53,18 +75,29 @@ class TasksController extends SecuredController
         ]);
     }
 
-    public function actionCreate(){
+    /**
+     * @throws ServerErrorHttpException
+     */
+    public function actionCreate()
+    {
         $taskCreateForm = new TaskCreateForm();
         if (Yii::$app->request->getIsPost()) {
             $taskCreateForm->load(Yii::$app->request->post());
             $taskCreateForm->files = UploadedFile::getInstances($taskCreateForm, 'files');
             if ($taskCreateForm->validate()) {
-                $task = $taskCreateForm->createTask();
-                $taskCreateForm->upload($task->id);
-                return Yii::$app->response->redirect(['tasks/view', 'id' => $task->id]);
+                $transaction = Yii::$app->db->beginTransaction();
+                try {
+                    $task = $taskCreateForm->createTask();
+                    $taskCreateForm->uploadFiles($task->id);
+                    $transaction->commit();
+                    return Yii::$app->response->redirect(['tasks/view', 'id' => $task->id]);
+                } catch (Exception $e) {
+                    $transaction->rollback();
+                    throw new ServerErrorHttpException('Loading error');
+                }
             }
+            return $this->render('create', ['model' => $taskCreateForm]);
         }
-        return $this->render('create', ['model' => $taskCreateForm]);
     }
 
 }

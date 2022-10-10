@@ -7,6 +7,7 @@ use app\models\File;
 use app\models\Task;
 use Yii;
 use yii\base\Model;
+use yii\web\ServerErrorHttpException;
 
 class TaskCreateForm extends Model
 {
@@ -31,7 +32,7 @@ class TaskCreateForm extends Model
         ];
     }
 
-        public function rules()
+    public function rules()
     {
         return [
             [['description', 'details', 'category'], 'required'],
@@ -43,6 +44,9 @@ class TaskCreateForm extends Model
         ];
     }
 
+    /**
+     * @throws ServerErrorHttpException
+     */
     public function createTask(){
         $task = new Task();
         $task->status = Task::STATUS_NEW;
@@ -50,13 +54,16 @@ class TaskCreateForm extends Model
         $task->details = $this->details;
         $task->category_id = $this->category;
         $task->date_of_execution = $this->dateOfExecution;
-        //$task->files = $this->files;
         $task->budget = $this->budget;
         $task->user_id = Yii::$app->user->id;
         $task->save();
-        return $task;
+        if ($task->save()) {
+            return $task;
+        } else {
+            throw new ServerErrorHttpException('Loading error');
+        }
     }
-    public function upload($taskId)
+    public function uploadFiles($taskId)
     {
         if ($this->validate() && !empty($this->files)) {
             foreach ($this->files as $file) {
