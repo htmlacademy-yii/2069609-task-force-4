@@ -9,6 +9,7 @@ use app\models\User;
 use Exception;
 use Yii;
 use yii\filters\AccessControl;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\ServerErrorHttpException;
 use yii\web\UploadedFile;
@@ -19,20 +20,21 @@ class TasksController extends SecuredController
 {
     public function behaviors()
     {
-        return [
-            'access' => [
-                'class' => AccessControl::class,
-                'only' => ['create'],
-                'rules' => [
-                    [   'allow' => true,
-                        'actions' => ['create'],
-                        'matchCallback' => function () {
-                            return Yii::$app->user->identity->role == User::ROLE_CUSTOMER;
-                        },
-                    ]
-                ]
-            ]
+        $rules = parent::behaviors();
+        $rule = [
+            'allow' => false,
+            'actions' => ['create'],
+            'roles' => ['@'],
+            'matchCallback' => function ($rule, $action) {
+                return (Yii::$app->user->identity->role === User::ROLE_EXECUTOR);
+            },
+            'denyCallback' => function ($rule, $action) {
+                throw new ForbiddenHttpException('Извините, только заказчики могут создавать задачи');
+            },
         ];
+        array_unshift($rules['access']['rules'], $rule);
+
+        return $rules;
     }
 
     public function actionIndex(): string
@@ -89,7 +91,7 @@ class TasksController extends SecuredController
                 try {
                     $taskCreateForm->doTransaction($taskCreateForm);
                 } catch (Exception $e) {
-                    return throw new Exception('Loading error');
+                    throw new ServerErrorHttpException('Loading error');
                 }
             }
         }

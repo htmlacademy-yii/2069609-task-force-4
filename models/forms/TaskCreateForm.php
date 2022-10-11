@@ -53,14 +53,14 @@ class TaskCreateForm extends Model
         $task->description = $this->description;
         $task->details = $this->details;
         $task->category_id = $this->category;
-        $task->date_of_execution = $this->dateOfExecution;
+        $task->date_of_execution = date('Y-m-d', $this->dateOfExecution);
         $task->budget = $this->budget;
         $task->user_id = Yii::$app->user->id;
 
         if ($task->save()) {
             return $task;
         } else {
-            throw new Exception('Task loading error');
+            throw new Exception('Task saving error');
         }
     }
 
@@ -77,7 +77,7 @@ class TaskCreateForm extends Model
                 $fileRecord->task_id = $taskId;
                 $fileRecord->title = '@webroot/uploads/' . $newName;
                 if (!$fileRecord->save()) {
-                    throw new Exception('File loading error');
+                    throw new Exception('File saving error');
                 }
             }
             return true;
@@ -98,7 +98,7 @@ class TaskCreateForm extends Model
             return Yii::$app->response->redirect(['tasks/view', 'id' => $task->id]);
         } catch (Exception $e) {
             $transaction->rollback();
-            return throw new Exception('Loading error');
+            throw new Exception('Loading error');
         }
     }
 
