@@ -5,9 +5,9 @@ namespace app\models\forms;
 use app\models\Category;
 use app\models\File;
 use app\models\Task;
+use Exception;
 use Yii;
 use yii\base\Model;
-use yii\web\ServerErrorHttpException;
 
 class TaskCreateForm extends Model
 {
@@ -45,7 +45,7 @@ class TaskCreateForm extends Model
     }
 
     /**
-     * @throws ServerErrorHttpException
+     * @throws Exception
      */
     public function createTask(){
         $task = new Task();
@@ -56,13 +56,17 @@ class TaskCreateForm extends Model
         $task->date_of_execution = $this->dateOfExecution;
         $task->budget = $this->budget;
         $task->user_id = Yii::$app->user->id;
-        $task->save();
+
         if ($task->save()) {
             return $task;
         } else {
-            throw new ServerErrorHttpException('Loading error');
+            throw new Exception('Task loading error');
         }
     }
+
+    /**
+     * @throws Exception
+     */
     public function uploadFiles($taskId)
     {
         if ($this->validate() && !empty($this->files)) {
@@ -72,11 +76,29 @@ class TaskCreateForm extends Model
                 $fileRecord = new File();
                 $fileRecord->task_id = $taskId;
                 $fileRecord->title = '@webroot/uploads/' . $newName;
-                $fileRecord->save();
+                if (!$fileRecord->save()) {
+                    throw new Exception('File loading error');
+                }
             }
             return true;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function doTransaction($model){
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $task = $model->createTask();
+            $model->uploadFiles($task->id);
+            $transaction->commit();
+            return Yii::$app->response->redirect(['tasks/view', 'id' => $task->id]);
+        } catch (Exception $e) {
+            $transaction->rollback();
+            return throw new Exception('Loading error');
         }
     }
 

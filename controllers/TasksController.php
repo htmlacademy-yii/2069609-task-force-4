@@ -76,7 +76,7 @@ class TasksController extends SecuredController
     }
 
     /**
-     * @throws ServerErrorHttpException
+     * @throws Exception
      */
     public function actionCreate()
     {
@@ -84,20 +84,15 @@ class TasksController extends SecuredController
         if (Yii::$app->request->getIsPost()) {
             $taskCreateForm->load(Yii::$app->request->post());
             $taskCreateForm->files = UploadedFile::getInstances($taskCreateForm, 'files');
+
             if ($taskCreateForm->validate()) {
-                $transaction = Yii::$app->db->beginTransaction();
                 try {
-                    $task = $taskCreateForm->createTask();
-                    $taskCreateForm->uploadFiles($task->id);
-                    $transaction->commit();
-                    return Yii::$app->response->redirect(['tasks/view', 'id' => $task->id]);
+                    $taskCreateForm->doTransaction($taskCreateForm);
                 } catch (Exception $e) {
-                    $transaction->rollback();
-                    throw new ServerErrorHttpException('Loading error');
+                    return throw new Exception('Loading error');
                 }
             }
-            return $this->render('create', ['model' => $taskCreateForm]);
         }
+        return $this->render('create', ['model' => $taskCreateForm]);
     }
-
 }
