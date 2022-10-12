@@ -39,3 +39,4 @@ tests/_support/_generated
 /data/categories.sql
 /data/cities.sql
 /data/user.sql
+/web/uploads

@@ -48,7 +48,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
                         <a href="#" class="link link--nav" >Мои задания</a>
                     </li>
                     <li class="list-item">
-                        <a href="#" class="link link--nav" >Создать задание</a>
+                        <a href="<?= Yii::$app->urlManager->createUrl('tasks/create') ?>" class="link link--nav" >Создать задание</a>
                     </li>
                     <li class="list-item">
                         <a href="#" class="link link--nav" >Настройки</a>
@@ -73,7 +73,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
                             <a href="#" class="link">Связаться с нами</a>
                         </li>
                         <li class="menu-item">
-                            <a href="<?=Yii::$app->request->baseUrl; ?> user/logout" class="link">Выход из системы</a>
+                            <a href="<?= Yii::$app->urlManager->createUrl('user/logout') ?>" class=link">Выход из системы</a>
                         </li>
                     </ul>
                 </div>

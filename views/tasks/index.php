@@ -18,13 +18,17 @@ use yii\widgets\ActiveForm;
         <div class="task-card">
             <div class="header-task">
                 <a  href="<?= Url::to(['tasks/view', 'id' => $task->id]) ?>" class="link link--block link--big"><?=$task->description ?></a>
+                <?php if ($task->budget !== null): ?>
                 <p class="price price--task"><?=$task->budget ?> ₽</p>
+                <?php endif; ?>
             </div>
             <p class="info-text"><span class="current-time"><?=Yii::$app->formatter->asRelativeTime($task->date_of_publication) ?></span></p>
             <p class="task-text"><?=$task->details ?>
             </p>
             <div class="footer-task">
-                <p class="info-text town-text"><?=$task->city->name ?></p>
+                <?php if ($task->city_id !== null): ?>
+                    <p class="info-text town-text"><?=$task->city->name ?></p>
+                <?php endif; ?>
                 <p class="info-text category-text"><?=$task->category->name ?></p>
                 <a href="<?= Url::to(['tasks/view', 'id' => $task->id]) ?>" class="button button--black">Смотреть Задание</a>
             </div>
