@@ -1,7 +1,6 @@
 <?php
 
-namespace Delta\TaskForce\exceptions;
-
+namespace app\src\exceptions;
 class FileFormatException extends \Exception
 {
 

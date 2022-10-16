@@ -2,10 +2,18 @@
 
 /** @var app\models\Task $task*/
 /** @var yii\web\View $this */
+/** @var RespondForm $model */
+
 
 use app\models\Task;
+use app\widgets\TaskActionWidget;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use app\widgets\RatingWidget;
+use app\src;
+use app\models\forms\RespondForm;
+use yii\widgets\ActiveForm;
+
 
 ?>
 <main class="main-content container">
@@ -16,45 +24,58 @@ use app\widgets\RatingWidget;
         </div>
         <p class="task-description">
             <?=$task->details ?> </p>
-        <a href="#" class="button button--blue action-btn" data-action="act_response">Откликнуться на задание</a>
-        <a href="#" class="button button--orange action-btn" data-action="refusal">Отказаться от задания</a>
-        <a href="#" class="button button--pink action-btn" data-action="completion">Завершить задание</a>
+
+
+        <?php
+        $taskAction = new src\TaskAction($task, Yii::$app->user->id);
+        $actionObject = $taskAction->getAvailableActions(); ?>
+            <?= $actionObject !== null ? TaskActionWidget::widget(['actionObject' => $actionObject]) : ''; ?>
+
+
         <div class="task-map">
             <img class="map" src="<?php echo Yii::$app->request->baseUrl; ?>/img/map.png"  width="725" height="346" alt="Новый арбат, 23, к. 1">
             <p class="map-address town">Москва</p>
             <p class="map-address">Новый арбат, 23, к. 1</p>
         </div>
-        <h4 class="head-regular">Отклики на задание</h4>
-        <?php foreach ($task->responses as $response): ?>
-        <div class="response-card">
-            <img class="customer-photo" src="<?= Yii::$app->request->baseUrl; ?>/img/man-glasses.png" width="146" height="156" alt="Фото заказчиков">
-            <div class="feedback-wrapper">
-                <a href="<?= Url::to(['user/view', 'id' => $response->user->id]) ?>" class="link link--block link--big"><?=$response->user->name ?></a>
 
-                <div class="response-wrapper">
-                        <div class="stars-rating small">
-                            <?= RatingWidget::widget(['rating' => $response->user->rating]) ?>
+
+        <?php if ((Yii::$app->user->id === $task->user_id) || (ArrayHelper::isIn(Yii::$app->user->id, ArrayHelper::getColumn($task->responses, 'user_id') ))): ?>
+            <h4 class="head-regular">Отклики на задание</h4>
+            <?php foreach ($task->responses as $response): ?>
+                <?php if (Yii::$app->user->id === $response->user_id): ?>
+                    <div class="response-card">
+                        <img class="customer-photo" src="<?= Yii::$app->request->baseUrl; ?>/img/man-glasses.png" width="146" height="156" alt="Фото заказчиков">
+                        <div class="feedback-wrapper">
+                            <a href="<?= Url::to(['user/view', 'id' => $response->user->id]) ?>" class="link link--block link--big"><?=$response->user->name ?></a>
+
+                            <div class="response-wrapper">
+                                    <div class="stars-rating small">
+                                        <?= RatingWidget::widget(['rating' => $response->user->rating]) ?>
+                                    </div>
+                                    <p class="reviews"><?=$response->user->getCountTaskByStatus(Task::STATUS_NEW) + $response->user->getCountTaskByStatus(Task::STATUS_FAILED)?> <span>отзыва</span></p>
+                            </div>
+
+                            <p class="response-message">
+                                <?=$response->comment ?>
+                            </p>
                         </div>
-                        <p class="reviews"><?=$response->user->getCountTaskByStatus(Task::STATUS_NEW) + $response->user->getCountTaskByStatus(Task::STATUS_FAILED)?> <span>отзыва</span></p>
-                </div>
+                        <div class="feedback-wrapper">
+                            <p class="info-text"><span class="current-time"><?=Yii::$app->formatter->asRelativeTime($response->date_add) ?></span></p>
+                            <p class="price price--small"><?=$response->price ?> ₽</p>
+                        </div>
 
-                <p class="response-message">
-                    <?=$response->comment ?>
-                </p>
-            </div>
-            <div class="feedback-wrapper">
-                <p class="info-text"><span class="current-time"><?=Yii::$app->formatter->asRelativeTime($response->date_add) ?></span></p>
-                <p class="price price--small"><?=$response->price ?> ₽</p>
-            </div>
-
-            <div class="button-popup">
-                <a href="#" class="button button--blue button--small">Принять</a>
-                <a href="#" class="button button--orange button--small">Отказать</a>
-            </div>
-        </div>
-        <?php endforeach; ?>
-
+                        <?php if ((Yii::$app->user->id === $task->user_id) && ($task->status === Task::STATUS_NEW ) && ($response->status !== 0)): ?>
+                            <div class="button-popup">
+                                <a href="<?= Yii::$app->urlManager->createUrl(['tasks/agree', 'id' => $response->id]) ?>" class="button button--blue button--small">Подтвердить</a>
+                                <a href="<?= Yii::$app->urlManager->createUrl(['tasks/disagree', 'id' => $response->id]) ?>" class="button button--orange button--small">Отказать</a>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </div>
+
     <div class="right-column">
         <div class="right-card black info-card">
             <h4 class="head-card">Информация о задании</h4>
@@ -84,6 +105,8 @@ use app\widgets\RatingWidget;
         </div>
     </div>
 </main>
+
+
 <section class="pop-up pop-up--refusal pop-up--close">
     <div class="pop-up--wrapper">
         <h4>Отказ от задания</h4>
@@ -121,6 +144,8 @@ use app\widgets\RatingWidget;
         </div>
     </div>
 </section>
+
+
 <section class="pop-up pop-up--act_response pop-up--close">
     <div class="pop-up--wrapper">
         <h4>Добавление отклика к заданию</h4>
@@ -129,22 +154,23 @@ use app\widgets\RatingWidget;
             Пожалуйста, укажите стоимость работы и добавьте комментарий, если необходимо.
         </p>
         <div class="addition-form pop-up--form regular-form">
-            <form>
-                <div class="form-group">
-                    <label class="control-label" for="addition-comment">Ваш комментарий</label>
-                    <textarea id="addition-comment"></textarea>
-                </div>
-                <div class="form-group">
-                    <label class="control-label" for="addition-price">Стоимость</label>
-                    <input id="addition-price" type="text">
-                </div>
-                <input type="submit" class="button button--pop-up button--blue" value="Завершить">
-            </form>
+            <?php $form = ActiveForm::begin([
+                'id' => 'respond-form',
+            ]); ?>
+
+            <div class="form-group">
+                <?= $form->field($model, 'price', ['options' => ['class' => 'control-label']])->textarea(); ?>
+                <?= $form->field($model, 'comment', ['options' => ['class' => 'form-group control-label']])->textarea(); ?>
+            </div>
+            <input type="submit" class="button button--pop-up button--blue" value="Завершить">
+            <?php ActiveForm::end(); ?>
         </div>
         <div class="button-container">
             <button class="button--close" type="button">Закрыть окно</button>
         </div>
     </div>
 </section>
+
+
 <div class="overlay"></div>
 <script src="js/main.js"></script>

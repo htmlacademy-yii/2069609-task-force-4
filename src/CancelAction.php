@@ -1,11 +1,11 @@
 <?php
 
-namespace Delta\TaskForce;
+namespace app\src;
 
 class CancelAction extends Action
 {
     const ACTION = 'Отменить';
-    const NAME = 'cansel';
+    const NAME = 'cancel';
 
     public function getAction(): string
     {
@@ -17,7 +17,8 @@ class CancelAction extends Action
         return self::NAME;
     }
 
-    public static function isAvailable(int $userCurrentId, int $idCustomer, int $idExecutor): bool
+    //буду сравнивать с $idCustomer
+    public static function isAvailable(int $userCurrentId, int $idCustomer): bool
     {
         if ($userCurrentId === $idCustomer) {
             return true;

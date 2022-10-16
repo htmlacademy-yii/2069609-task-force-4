@@ -15,6 +15,7 @@ use yii\db\ActiveRecord;
  * @property string $comment
  * @property int|null $score
  * @property string|null $feedback
+ * @property boolean $status
  *
  * @property Task $task
  * @property User $user
@@ -40,6 +41,7 @@ class Response extends ActiveRecord
             [['comment', 'feedback'], 'string', 'max' => 255],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Task::class, 'targetAttribute' => ['task_id' => 'id']],
+            [['status'], 'boolean']
         ];
     }
 
@@ -51,16 +53,17 @@ class Response extends ActiveRecord
         return [
             'id' => 'ID',
             'user_id' => 'User ID',
-            'task_id' => 'Task ID',
+            'task_id' => 'TaskAction ID',
             'price' => 'Price',
             'comment' => 'Comment',
             'score' => 'Score',
             'feedback' => 'Feedback',
+            'status' => 'Status',
         ];
     }
 
     /**
-     * Gets query for [[Task]].
+     * Gets query for [[TaskAction]].
      *
      * @return \yii\db\ActiveQuery
      */

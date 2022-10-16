@@ -1,6 +1,9 @@
 <?php
 
-namespace Delta\TaskForce;
+namespace app\src;
+
+use app\models\User;
+use yii\helpers\ArrayHelper;
 
 class RespondAction extends Action
 {
@@ -17,9 +20,13 @@ class RespondAction extends Action
         return self::NAME;
     }
 
-    public static function isAvailable(int $userCurrentId, int $idCustomer, int $idExecutor): bool
+    //буду сравнивать с $idExecutor
+    public static function isAvailable(int $userCurrentId): bool
     {
-        if ($userCurrentId === $idExecutor) {
+        $executors = User::find()->where(['role' => User::ROLE_EXECUTOR])->all();
+        $idsExecutors = ArrayHelper::getColumn($executors, 'id');
+
+        if (ArrayHelper::isIn($userCurrentId, $idsExecutors)) {
             return true;
         } else {
             return false;

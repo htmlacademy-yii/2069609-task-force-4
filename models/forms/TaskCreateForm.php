@@ -39,7 +39,7 @@ class TaskCreateForm extends Model
             ['description', 'string', 'min' => 10, 'max' => 255],
             ['details', 'string', 'min' => 30, 'max' => 255],
             ['category', 'exist', 'targetClass' => Category::class, 'targetAttribute' => ['category' => 'id']],
-            ['budget', 'integer', 'min' => 0],
+            ['budget', 'integer', 'min' => 1],
             [['files'], 'file', 'maxFiles' => 4]
         ];
     }
@@ -60,7 +60,7 @@ class TaskCreateForm extends Model
         if ($task->save()) {
             return $task;
         } else {
-            throw new Exception('Task saving error');
+            throw new Exception('TaskAction saving error');
         }
     }
 

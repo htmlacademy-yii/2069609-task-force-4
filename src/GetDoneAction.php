@@ -1,6 +1,6 @@
 <?php
 
-namespace Delta\TaskForce;
+namespace app\src;
 
 class GetDoneAction extends Action
 {
@@ -17,7 +17,8 @@ class GetDoneAction extends Action
         return self::NAME;
     }
 
-    public static function isAvailable(int $userCurrentId, int $idCustomer, int $idExecutor): bool
+    //буду сравнивать с idCustomer
+    public static function isAvailable(int $userCurrentId, int $idCustomer): bool
     {
         if ($userCurrentId === $idCustomer) {
             return true;
