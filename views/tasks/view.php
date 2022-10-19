@@ -4,17 +4,14 @@
 /** @var yii\web\View $this */
 /** @var RespondForm $model */
 
-
 use app\models\Task;
 use app\widgets\TaskActionWidget;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use app\widgets\RatingWidget;
-use app\src;
+use Delta\TaskForce\TaskAction;
 use app\models\forms\RespondForm;
 use yii\widgets\ActiveForm;
-
-
 ?>
 <main class="main-content container">
     <div class="left-column">
@@ -27,7 +24,7 @@ use yii\widgets\ActiveForm;
 
 
         <?php
-        $taskAction = new src\TaskAction($task, Yii::$app->user->id);
+        $taskAction = new TaskAction($task, Yii::$app->user->id);
         $actionObject = $taskAction->getAvailableActions(); ?>
             <?= $actionObject !== null ? TaskActionWidget::widget(['actionObject' => $actionObject]) : ''; ?>
 
@@ -156,6 +153,7 @@ use yii\widgets\ActiveForm;
         <div class="addition-form pop-up--form regular-form">
             <?php $form = ActiveForm::begin([
                 'id' => 'respond-form',
+                'action' => ['/tasks/respond', 'id_task' => $task->id],
             ]); ?>
 
             <div class="form-group">
@@ -170,7 +168,5 @@ use yii\widgets\ActiveForm;
         </div>
     </div>
 </section>
-
-
 <div class="overlay"></div>
-<script src="js/main.js"></script>
+

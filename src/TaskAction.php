@@ -1,10 +1,10 @@
 <?php
-namespace app\src;
+namespace Delta\TaskForce;
 
 use app\models\Response;
 use app\models\Task;
 use app\models\User;
-use app\src\exceptions\IncomingDataException;
+use Delta\TaskForce\exceptions\IncomingDataException;
 
 class TaskAction {
     //статусы заданий
@@ -87,6 +87,7 @@ class TaskAction {
 
         if ($this->task->status !== self::STATUS_NEW) {
             if ($this->task->status !== self::STATUS_AT_WORK) {
+                // пришлось убрать ошибку и вернуть null, тк после отмены задания вылезала ошибка потом решить этот вопрос
                 //throw new IncomingDataException("Для текущего статуса нет доступных действий");
                 return null;
             }

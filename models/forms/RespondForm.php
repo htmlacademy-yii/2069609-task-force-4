@@ -24,7 +24,7 @@ class RespondForm extends Model
     {
         return [
             'price' => 'Стоимость',
-            'comment' => 'Ващ комментарий',
+            'comment' => 'Ваш комментарий',
         ];
     }
 
@@ -33,8 +33,16 @@ class RespondForm extends Model
      */
     public function createRespond($id_task){
         $respond = new Response();
-        $respond->price = $this->price;
-        $respond->comment = $this->comment;
+        if (empty($this->price)){
+            $respond->price = null;
+        } else {
+            $respond->price = $this->price;
+        }
+        if (empty($this->comment)){
+            $respond->comment = null;
+        } else {
+            $respond->comment = $this->comment;
+        }
         $respond->user_id = Yii::$app->user->id;
         $respond->task_id = $id_task;
         $respond->save();

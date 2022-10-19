@@ -5,9 +5,9 @@
 
 use app\assets\LandingAsset;
 use yii\bootstrap5\Html;
-use yii\helpers\Url;
 
 LandingAsset::register($this);
+//$this->registerJsFile("@web/js/landing.js");
 
 ?>
 
@@ -112,7 +112,6 @@ LandingAsset::register($this);
     </footer>
 </div>
 <div class="overlay"></div>
-<script src="js/landing.js"></script>
 <?php $this->endBody() ?>
 </body>
 </html>

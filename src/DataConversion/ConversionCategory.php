@@ -2,9 +2,6 @@
 
 namespace Delta\TaskForce\DataConversion;
 
-use Delta\TaskForce\exceptions\FileFormatException;
-use Delta\TaskForce\exceptions\SourceFileException;
-
 class ConversionCategory extends ConversionFromCSVtoSQL
 {
     public function getFileName(): string

@@ -1,6 +1,6 @@
 <?php
 
-namespace app\src;
+namespace Delta\TaskForce;
 
 use app\models\User;
 use yii\helpers\ArrayHelper;
@@ -31,5 +31,19 @@ class RespondAction extends Action
         } else {
             return false;
         }
+    }
+
+    public function getClass(): string
+    {
+        return 'button button--blue action-btn';
+    }
+
+    public function getDataAction()
+    {
+        return 'act_response';
+    }
+    public function getUrlName()
+    {
+        return '#';
     }
 }

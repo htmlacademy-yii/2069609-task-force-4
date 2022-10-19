@@ -1,6 +1,8 @@
 <?php
 
-namespace app\src;
+namespace Delta\TaskForce;
+
+use Yii;
 
 class CancelAction extends Action
 {
@@ -25,5 +27,21 @@ class CancelAction extends Action
         } else {
             return false;
         }
+    }
+
+    public function getClass(): string
+    {
+        return 'button button--yellow action-btn';
+    }
+
+    public function getDataAction()
+    {
+        return '';
+    }
+
+    public function getUrlName()
+    {
+        $taskId = Yii::$app->request->get('id');
+        return ['/tasks/cancel', 'id' => $taskId];
     }
 }

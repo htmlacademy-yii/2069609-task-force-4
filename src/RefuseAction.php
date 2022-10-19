@@ -1,6 +1,6 @@
 <?php
 
-namespace app\src;
+namespace Delta\TaskForce;
 
 class RefuseAction extends Action
 {
@@ -25,5 +25,19 @@ class RefuseAction extends Action
         } else {
             return false;
         }
+    }
+
+    public function getClass(): string
+    {
+        return 'button button--orange action-btn';
+    }
+
+    public function getDataAction(){
+        return 'refusal';
+    }
+
+    public function getUrlName()
+    {
+        return ['/tasks/refuse'];
     }
 }
