@@ -16,7 +16,7 @@ class TaskActionWidget extends Widget
             $this->actionObject->getAction(),
             $this->actionObject->getUrlName(),
             [
-                'className' => $this->actionObject->getClass(),
+                'class' => $this->actionObject->getClass(),
                 'data-action' => $this->actionObject->getDataAction()
             ]
         );

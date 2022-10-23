@@ -54,6 +54,8 @@ class User extends ActiveRecord implements IdentityInterface
             [['role', 'name', 'email', 'city_id', 'password'], 'required'],
             [['role'], 'string'],
             [['city_id', 'rating', 'availability', 'permission'], 'integer'],
+            ['availability', 'default', 'value' => 1],
+            ['rating', 'default', 'value' => 0],
             [['dt_add'], 'safe'],
             [['name', 'email', 'telegram', 'vk'], 'string', 'max' => 255],
             [['phone'], 'string', 'max' => 32],
@@ -155,6 +157,12 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function getCountTaskByStatus(string $status) {
         return $this->getTasks()->where(['status' => $status])->count();
+    }
+
+    public function getRating($id){
+        $countAllTask = Response::find()->where(['user_id'=>$id, 'status' => 1])->count();
+        $totalScore = Response::find()->where(['user_id' => $id])->sum('score');
+        return round(($totalScore)/($countAllTask));
     }
 
     public static function findIdentity($id)

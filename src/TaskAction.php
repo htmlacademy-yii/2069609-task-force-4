@@ -5,6 +5,7 @@ use app\models\Response;
 use app\models\Task;
 use app\models\User;
 use Delta\TaskForce\exceptions\IncomingDataException;
+use Yii;
 
 class TaskAction {
     //статусы заданий
@@ -57,33 +58,23 @@ class TaskAction {
     }
 
     //метод для получения доступных объектов действий для указанного статуса
-
-    /**
-     * @throws IncomingDataException
-     */
     public function getAvailableActions(): ?Action
     {
         //id автора задачи
         $idCustomer = $this->task->user_id;
+
         //id исполнителя
         $executor = Response::findOne([
             'task_id' => $this->task->id,
             'status' => 1,
         ]);
 
-        if ($executor!== null) {
-            $idExecutor = $executor->id;
-        } else {
-            $idExecutor = 0;
-        }
-
-        $userCurrent = User::findOne(\Yii::$app->user->id);
-
+        $userCurrent = User::findOne(Yii::$app->user->id);
 
         $isCancelActionAvailable = CancelAction::isAvailable($this->idCurrentUser, $idCustomer);
-        $isRespondActionAvailable = RespondAction::isAvailable($this->idCurrentUser);
+        $isRespondActionAvailable = RespondAction::isAvailable($this->idCurrentUser, $this->task->id);
         $isGetDoneActionAvailable = GetDoneAction::isAvailable($this->idCurrentUser, $idCustomer);
-        $isRefuseActionAvailable = RefuseAction::isAvailable($this->idCurrentUser, $idExecutor);
+        $isRefuseActionAvailable = RefuseAction::isAvailable($this->task, $this->idCurrentUser);
 
         if ($this->task->status !== self::STATUS_NEW) {
             if ($this->task->status !== self::STATUS_AT_WORK) {
@@ -99,47 +90,11 @@ class TaskAction {
         if ($this->task->status === self::STATUS_AT_WORK && $isGetDoneActionAvailable) {
             return new GetDoneAction();
         }
-        if ($this->task->status === self::STATUS_NEW && $isRespondActionAvailable && $userCurrent->availability !== 0) {
+        if ($this->task->status === self::STATUS_NEW && $isRespondActionAvailable) {
             return new RespondAction();
         }
         if ($this->task->status === self::STATUS_AT_WORK && $isRefuseActionAvailable) {
             return new RefuseAction();
-        }
-        return null;
-    }
-
-    //метод для получения статуса, в которой он перейдёт после выполнения указанного действия
-
-    /**
-     * @throws IncomingDataException
-     */
-    public function getNextStatus(string $action): ?string
-    {
-        $idCustomer = $this->task->user_id;
-        $executor = Response::findOne([
-            'task_id' => $this->task->id,
-            'status' => 1,
-        ]);
-        $idExecutor = $executor->id;
-
-        if (($action !== self::ACTION_CANCEL) && ($action !== self::ACTION_RESPOND) &&
-            ($action !== self::ACTION_GET_DONE) && ($action !== self::ACTION_REFUSE)) {
-            throw new IncomingDataException("Не существует действия (или действие недоступно)");
-        }
-        if (($this->task->status !== self::STATUS_NEW) && ($this->task->status === self::STATUS_AT_WORK)) {
-            throw new IncomingDataException("Не существует статуса");
-        }
-        if ($action === self::ACTION_CANCEL && $this->task->status === self::STATUS_NEW && $this->idCurrentUser === $idCustomer) {
-            return self::STATUS_CANCELLED;
-        }
-        if ($action === self::ACTION_RESPOND && $this->task->status === self::STATUS_NEW && $this->idCurrentUser === $idExecutor) {
-            return self::STATUS_AT_WORK;
-        }
-        if ($action === self::ACTION_GET_DONE && $this->task->status === self::STATUS_AT_WORK && $this->idCurrentUser === $idCustomer) {
-            return self::STATUS_DONE;
-        }
-        if ($action === self::ACTION_REFUSE && $this->task->status === self::STATUS_AT_WORK && $this->idCurrentUser === $idExecutor) {
-            return self::STATUS_FAILED;
         }
         return null;
     }

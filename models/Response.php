@@ -11,8 +11,8 @@ use yii\db\ActiveRecord;
  * @property int $id
  * @property int $user_id
  * @property int $task_id
- * @property int $price
- * @property string $comment
+ * @property int|null $price
+ * @property string|null $comment
  * @property int|null $score
  * @property string|null $feedback
  * @property boolean $status
@@ -36,12 +36,15 @@ class Response extends ActiveRecord
     public function rules(): array
     {
         return [
-            [['user_id', 'task_id', 'price', 'comment'], 'required'],
+            [['user_id', 'task_id'], 'required'],
             [['user_id', 'task_id', 'price', 'score'], 'integer'],
             [['comment', 'feedback'], 'string', 'max' => 255],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Task::class, 'targetAttribute' => ['task_id' => 'id']],
-            [['status'], 'boolean']
+            [['status'], 'boolean'],
+            ['status', 'default', 'value' => 0],
+            [['comment'], 'default', 'value' => null],
+            [['feedback', 'score'], 'default', 'value' => null],
         ];
     }
 

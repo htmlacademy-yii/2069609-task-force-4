@@ -60,7 +60,7 @@ class TaskCreateForm extends Model
         if ($task->save()) {
             return $task;
         } else {
-            throw new Exception('TaskAction saving error');
+            throw new Exception('Task saving error');
         }
     }
 

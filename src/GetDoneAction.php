@@ -4,7 +4,7 @@ namespace Delta\TaskForce;
 
 class GetDoneAction extends Action
 {
-    const ACTION = 'Выполнено';
+    const ACTION = 'Завершить';
     const NAME = 'get done';
 
     public function getAction(): string
@@ -38,6 +38,7 @@ class GetDoneAction extends Action
 
     public function getUrlName()
     {
-        return ['/tasks/done'];
+        //return ['/tasks/done'];
+        return '#';
     }
 }

@@ -4,6 +4,7 @@
 /** @var string $content */
 
 use app\assets\AppAsset;
+use app\models\User;
 use yii\bootstrap5\Html;
 
 AppAsset::register($this);
@@ -59,7 +60,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
                 <img class="user-photo" src="<?=Yii::$app->request->baseUrl; ?>/img/man-glasses.png" width="55" height="55" alt="Аватар">
             </a>
             <div class="user-menu">
-                <p class="user-name">Василий</p>
+                <p class="user-name"><?= User::findOne(Yii::$app->user->id)->name; ?></p>
                 <div class="popup-head">
                     <ul class="popup-menu">
                         <li class="menu-item">

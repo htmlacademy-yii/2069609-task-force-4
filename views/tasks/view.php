@@ -3,6 +3,9 @@
 /** @var app\models\Task $task*/
 /** @var yii\web\View $this */
 /** @var RespondForm $model */
+/** @var RefuseForm $modelRefuse */
+/** @var CompleteForm $modelComplete */
+
 
 use app\models\Task;
 use app\widgets\TaskActionWidget;
@@ -11,7 +14,11 @@ use yii\helpers\Url;
 use app\widgets\RatingWidget;
 use Delta\TaskForce\TaskAction;
 use app\models\forms\RespondForm;
+use app\models\forms\RefuseForm;
+use app\models\forms\CompleteForm;
 use yii\widgets\ActiveForm;
+use kartik\rating\StarRating;
+
 ?>
 <main class="main-content container">
     <div class="left-column">
@@ -20,14 +27,13 @@ use yii\widgets\ActiveForm;
             <p class="price price--big"><?=$task->budget ?> ₽</p>
         </div>
         <p class="task-description">
-            <?=$task->details ?> </p>
-
+            <?=$task->details ?>
+        </p>
 
         <?php
         $taskAction = new TaskAction($task, Yii::$app->user->id);
         $actionObject = $taskAction->getAvailableActions(); ?>
-            <?= $actionObject !== null ? TaskActionWidget::widget(['actionObject' => $actionObject]) : ''; ?>
-
+        <?= $actionObject !== null ? TaskActionWidget::widget(['actionObject' => $actionObject]) : ''; ?>
 
         <div class="task-map">
             <img class="map" src="<?php echo Yii::$app->request->baseUrl; ?>/img/map.png"  width="725" height="346" alt="Новый арбат, 23, к. 1">
@@ -39,7 +45,7 @@ use yii\widgets\ActiveForm;
         <?php if ((Yii::$app->user->id === $task->user_id) || (ArrayHelper::isIn(Yii::$app->user->id, ArrayHelper::getColumn($task->responses, 'user_id') ))): ?>
             <h4 class="head-regular">Отклики на задание</h4>
             <?php foreach ($task->responses as $response): ?>
-                <?php if (Yii::$app->user->id === $response->user_id): ?>
+                <?php if (Yii::$app->user->id === $response->user_id || Yii::$app->user->id === $task->user_id): ?>
                     <div class="response-card">
                         <img class="customer-photo" src="<?= Yii::$app->request->baseUrl; ?>/img/man-glasses.png" width="146" height="156" alt="Фото заказчиков">
                         <div class="feedback-wrapper">
@@ -61,7 +67,7 @@ use yii\widgets\ActiveForm;
                             <p class="price price--small"><?=$response->price ?> ₽</p>
                         </div>
 
-                        <?php if ((Yii::$app->user->id === $task->user_id) && ($task->status === Task::STATUS_NEW ) && ($response->status !== 0)): ?>
+                        <?php if ((Yii::$app->user->id === $task->user_id) && ($task->status === Task::STATUS_NEW ) && ($response->status === 0)): ?>
                             <div class="button-popup">
                                 <a href="<?= Yii::$app->urlManager->createUrl(['tasks/agree', 'id' => $response->id]) ?>" class="button button--blue button--small">Подтвердить</a>
                                 <a href="<?= Yii::$app->urlManager->createUrl(['tasks/disagree', 'id' => $response->id]) ?>" class="button button--orange button--small">Отказать</a>
@@ -101,23 +107,31 @@ use yii\widgets\ActiveForm;
             </ul>
         </div>
     </div>
+
 </main>
 
 
 <section class="pop-up pop-up--refusal pop-up--close">
     <div class="pop-up--wrapper">
-        <h4>Отказ от задания</h4>
-        <p class="pop-up-text">
-            <b>Внимание!</b><br>
+        <?php $form = ActiveForm::begin([
+            'id' => 'refuse-form',
+            'action' => ['/tasks/refuse', 'id_task' => $task->id],
+        ]); ?>
+            <h4>Отказ от задания</h4>
+            <p class="pop-up-text">
+                <b>Внимание!</b><br>
             Вы собираетесь отказаться от выполнения этого задания.<br>
             Это действие плохо скажется на вашем рейтинге и увеличит счетчик проваленных заданий.
-        </p>
-        <a class="button button--pop-up button--orange">Отказаться</a>
-        <div class="button-container">
-            <button class="button--close" type="button">Закрыть окно</button>
-        </div>
+            </p>
+            <div class="button-container">
+                <button class="button--close" type="button">Закрыть окно</button>
+                <?= $form->field($modelRefuse, 'proof')->hiddenInput(); ?>
+            </div>
+            <input type="submit" class="button button--pop-up button--orange" value="Отказаться">
+        <?php ActiveForm::end(); ?>
     </div>
 </section>
+
 <section class="pop-up pop-up--completion pop-up--close">
     <div class="pop-up--wrapper">
         <h4>Завершение задания</h4>
@@ -126,22 +140,30 @@ use yii\widgets\ActiveForm;
             Пожалуйста, оставьте отзыв об исполнителе и отметьте отдельно, если возникли проблемы.
         </p>
         <div class="completion-form pop-up--form regular-form">
-            <form>
+            <?php $form = ActiveForm::begin([
+                'id' => 'refuse-form',
+                'action' => ['/tasks/complete', 'id_task' => $task->id],
+            ]); ?>
                 <div class="form-group">
-                    <label class="control-label" for="completion-comment">Ваш комментарий</label>
-                    <textarea id="completion-comment"></textarea>
+                    <?= $form->field($modelComplete, 'feedback', ['options' => ['class' => 'control-label']])->textarea(); ?>
                 </div>
-                <p class="completion-head control-label">Оценка работы</p>
-                <div class="stars-rating big active-stars"><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span></div>
+                <?=$form->field($modelComplete, 'score')->widget(StarRating::class, ['pluginOptions' => [
+                    'showClear' => false,
+                    'showCaption' => false,
+                    'size'=>'md',
+                    'min' => 0,
+                    'max' => 5,
+                    'step' => 1,
+                    'language' => 'ru',
+                ]]); ?>
                 <input type="submit" class="button button--pop-up button--blue" value="Завершить">
-            </form>
+            <?php ActiveForm::end(); ?>
         </div>
         <div class="button-container">
             <button class="button--close" type="button">Закрыть окно</button>
         </div>
     </div>
 </section>
-
 
 <section class="pop-up pop-up--act_response pop-up--close">
     <div class="pop-up--wrapper">
@@ -154,7 +176,8 @@ use yii\widgets\ActiveForm;
             <?php $form = ActiveForm::begin([
                 'id' => 'respond-form',
                 'action' => ['/tasks/respond', 'id_task' => $task->id],
-            ]); ?>
+                'enableAjaxValidation' => true,
+                ]); ?>
 
             <div class="form-group">
                 <?= $form->field($model, 'price', ['options' => ['class' => 'control-label']])->textarea(); ?>
