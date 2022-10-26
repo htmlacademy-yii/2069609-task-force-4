@@ -142,4 +142,13 @@ class Task extends ActiveRecord
         return $this->hasMany(File::class, ['task_id' => 'id']);
     }
 
+    public function getResponseForUser($idUser, $idTask){
+        $responses = Response::findOne(['user_id' => $idUser, 'task_id' => $idTask]);
+        if ($responses){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

@@ -7,8 +7,6 @@ use app\assets\LandingAsset;
 use yii\bootstrap5\Html;
 
 LandingAsset::register($this);
-//$this->registerJsFile("@web/js/landing.js");
-
 ?>
 
 <?php $this->beginPage() ?>

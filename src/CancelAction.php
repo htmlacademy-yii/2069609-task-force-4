@@ -2,7 +2,9 @@
 
 namespace Delta\TaskForce;
 
+use app\models\Task;
 use Yii;
+use yii\helpers\Url;
 
 class CancelAction extends Action
 {
@@ -19,14 +21,10 @@ class CancelAction extends Action
         return self::NAME;
     }
 
-    //буду сравнивать с $idCustomer
-    public static function isAvailable(int $userCurrentId, int $idCustomer): bool
+    //Если автор задачи = тек пользователь возвращаем true
+    public static function isAvailable(Task $task, int $userCurrentId): bool
     {
-        if ($userCurrentId === $idCustomer) {
-            return true;
-        } else {
-            return false;
-        }
+        return $task->user_id === $userCurrentId;
     }
 
     public function getClass(): string
@@ -34,14 +32,14 @@ class CancelAction extends Action
         return 'button button--yellow action-btn';
     }
 
-    public function getDataAction()
+    public function getDataAction(): string
     {
         return '';
     }
 
-    public function getUrlName()
+    public function getUrlName(): string
     {
         $taskId = Yii::$app->request->get('id');
-        return ['/tasks/cancel', 'id' => $taskId];
+        return Url::to(['/tasks/cancel', 'id' => $taskId]);
     }
 }

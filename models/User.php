@@ -36,6 +36,7 @@ class User extends ActiveRecord implements IdentityInterface
 {
     const ROLE_CUSTOMER = 'customer';
     const ROLE_EXECUTOR = 'executor';
+    const IS_AVAILABILITY = 1;
 
     /**
      * {@inheritdoc}

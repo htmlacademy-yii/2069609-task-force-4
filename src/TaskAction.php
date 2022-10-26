@@ -5,7 +5,10 @@ use app\models\Response;
 use app\models\Task;
 use app\models\User;
 use Delta\TaskForce\exceptions\IncomingDataException;
+use Exception;
+use Symfony\Component\CssSelector\Exception\InternalErrorException;
 use Yii;
+use yii\web\ForbiddenHttpException;
 
 class TaskAction {
     //статусы заданий
@@ -60,20 +63,9 @@ class TaskAction {
     //метод для получения доступных объектов действий для указанного статуса
     public function getAvailableActions(): ?Action
     {
-        //id автора задачи
-        $idCustomer = $this->task->user_id;
-
-        //id исполнителя
-        $executor = Response::findOne([
-            'task_id' => $this->task->id,
-            'status' => 1,
-        ]);
-
-        $userCurrent = User::findOne(Yii::$app->user->id);
-
-        $isCancelActionAvailable = CancelAction::isAvailable($this->idCurrentUser, $idCustomer);
-        $isRespondActionAvailable = RespondAction::isAvailable($this->idCurrentUser, $this->task->id);
-        $isGetDoneActionAvailable = GetDoneAction::isAvailable($this->idCurrentUser, $idCustomer);
+        $isCancelActionAvailable = CancelAction::isAvailable($this->task, $this->idCurrentUser);
+        $isRespondActionAvailable = RespondAction::isAvailable($this->task, $this->idCurrentUser);
+        $isGetDoneActionAvailable = GetDoneAction::isAvailable($this->task, $this->idCurrentUser);
         $isRefuseActionAvailable = RefuseAction::isAvailable($this->task, $this->idCurrentUser);
 
         if ($this->task->status !== self::STATUS_NEW) {
@@ -97,5 +89,109 @@ class TaskAction {
             return new RefuseAction();
         }
         return null;
+    }
+
+    public static function isCreateTaskAvailable($userCurrentId) {
+        return User::findOne($userCurrentId)->role === User::ROLE_CUSTOMER;
+    }
+
+    public static function isAgreeResponseAvailable($idResponse) {
+
+        $response = Response::findOne($idResponse);
+        $isResponseExists = true;
+        $isExecutorAvailable = true;
+        $isTaskAlreadyHaveNotActiveResponse = true;
+        $isCurrentUserIsTaskAuthor = true;
+
+        if (!$response){
+            $isResponseExists = false;
+        }
+        if ($response->user->availability !== User::IS_AVAILABILITY) {
+            $isExecutorAvailable = false;
+        }
+        if ($response->task->status !== Task::STATUS_NEW){
+            $isTaskAlreadyHaveNotActiveResponse = false;
+        }
+        if($response->task->user_id !== Yii::$app->user->id){
+            $isCurrentUserIsTaskAuthor = false;
+        }
+        return $isResponseExists && $isExecutorAvailable && $isTaskAlreadyHaveNotActiveResponse && $isCurrentUserIsTaskAuthor;
+    }
+
+    public static function isDisagreeResponseAvailable($idResponse) {
+        $response = Response::findOne($idResponse);
+        $isResponseExists = true;
+        $isCurrentUserIsTaskAuthor = true;
+        $isResponseIsNotActive = true;
+        $isTaskStatusIsNew = true;
+
+        if (!$response){
+            $isResponseExists = false;
+        }
+        if($response->task->user_id !== Yii::$app->user->id){
+            $isCurrentUserIsTaskAuthor = false;
+        }
+        if ($response->status == Response::STATUS_ACTIVE_RESPONSE){
+            $isResponseIsNotActive = false;
+        }
+        if ($response->task->status !== Task::STATUS_NEW){
+            $isTaskStatusIsNew = false;
+        }
+        return $isResponseExists && $isCurrentUserIsTaskAuthor && $isResponseIsNotActive && $isTaskStatusIsNew;
+    }
+
+    /**
+     * @throws InternalErrorException
+     */
+    public static function cancel($id_task){
+        $task = Task::findOne($id_task);
+        $task->status = Task::STATUS_CANCELLED;
+        if ($task->save()){
+            return true;
+        } else {
+            throw new InternalErrorException('Извините, задание не сохранилось');
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public static function clickAgree($id){
+        $response = Response::findOne($id);
+        $task = Task::findOne($response->task_id);
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $response->status = 1;
+            $user = User::findOne($response->user->id);
+            $user->availability = 0;
+            if (!$user->save()) {
+                throw new ForbiddenHttpException('Извините, произошла ошибка сохранения');
+            };
+            if (!$response->save()){
+                throw new ForbiddenHttpException('Извините, произошла ошибка сохранения');
+            };
+            $task->status = Task::STATUS_AT_WORK;
+            if (!$task->save()){
+                throw new ForbiddenHttpException('Извините, произошла ошибка сохранения');
+            };
+            $transaction->commit();
+            return true;
+        } catch (Exception $e) {
+            $transaction->rollback();
+            throw new Exception('Loading error');
+        }
+    }
+
+    /**
+     * @throws InternalErrorException
+     */
+    public static function clickDisagree($idResponse){
+        $response = Response::findOne($idResponse);
+        $response->status = 0;
+        if (!$response->save()) {
+            throw new InternalErrorException('Извините, произошла ошибка сохранения');
+        } else {
+            return true;
+        }
     }
 }

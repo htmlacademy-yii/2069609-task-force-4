@@ -4,8 +4,6 @@ namespace Delta\TaskForce;
 
 use app\models\Response;
 use app\models\Task;
-use yii\helpers\Url;
-
 class RefuseAction extends Action
 {
     const ACTION = 'Отказаться';
@@ -21,18 +19,14 @@ class RefuseAction extends Action
         return self::NAME;
     }
 
-    //буду сравнивать с idExecutor
+    //Отказаться от задания может только активный исполнитель данного задания
     public static function isAvailable(Task $task, int $userCurrentId): bool
     {
-        $response = Response::findOne(['task_id' => $task->id, 'status' => 1]);
+        $response = Response::findOne(['task_id' => $task->id, 'status' => Response::STATUS_ACTIVE_RESPONSE, 'user_id' => $userCurrentId]);
         if ($response === null){
             return false;
         } else {
-            if ($userCurrentId === $response->user_id) {
-                return true;
-            } else {
-                return false;
-            }
+            return true;
         }
     }
 
@@ -41,11 +35,12 @@ class RefuseAction extends Action
         return 'button button--orange action-btn';
     }
 
-    public function getDataAction(){
+    public function getDataAction(): string
+    {
         return 'refusal';
     }
 
-    public function getUrlName()
+    public function getUrlName(): string
     {
         return '#';
     }

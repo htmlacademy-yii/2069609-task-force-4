@@ -3,8 +3,10 @@
 namespace app\models\forms;
 
 use app\models\Response;
+use Exception;
 use Yii;
 use yii\base\Model;
+use yii\web\ForbiddenHttpException;
 
 class RespondForm extends Model
 {
@@ -28,12 +30,26 @@ class RespondForm extends Model
         ];
     }
 
+    /**
+     * @throws ForbiddenHttpException
+     * @throws Exception
+     */
     public function createRespond($id_task){
         $respond = new Response();
-        $respond->price = $this->price;
-        $respond->comment = $this->comment;
-        $respond->user_id = Yii::$app->user->id;
-        $respond->task_id = $id_task;
-        $respond->save();
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $respond->price = $this->price;
+            $respond->comment = $this->comment;
+            $respond->user_id = Yii::$app->user->id;
+            $respond->task_id = $id_task;
+            if (!$respond->save()){
+                throw new ForbiddenHttpException('Ошибка сохранения');
+            }
+            $transaction->commit();
+        } catch (Exception $e) {
+            $transaction->rollback();
+            throw new Exception('Loading error');
+        }
     }
+
 }

@@ -7,6 +7,7 @@
 /** @var CompleteForm $modelComplete */
 
 
+use app\models\Response;
 use app\models\Task;
 use app\widgets\TaskActionWidget;
 use yii\helpers\ArrayHelper;
@@ -42,7 +43,7 @@ use kartik\rating\StarRating;
         </div>
 
 
-        <?php if ((Yii::$app->user->id === $task->user_id) || (ArrayHelper::isIn(Yii::$app->user->id, ArrayHelper::getColumn($task->responses, 'user_id') ))): ?>
+        <?php if ((Yii::$app->user->id === $task->user_id) || $task->getResponseForUser(Yii::$app->user->id, $task->id)): ?>
             <h4 class="head-regular">Отклики на задание</h4>
             <?php foreach ($task->responses as $response): ?>
                 <?php if (Yii::$app->user->id === $response->user_id || Yii::$app->user->id === $task->user_id): ?>
@@ -66,8 +67,7 @@ use kartik\rating\StarRating;
                             <p class="info-text"><span class="current-time"><?=Yii::$app->formatter->asRelativeTime($response->date_add) ?></span></p>
                             <p class="price price--small"><?=$response->price ?> ₽</p>
                         </div>
-
-                        <?php if ((Yii::$app->user->id === $task->user_id) && ($task->status === Task::STATUS_NEW ) && ($response->status === 0)): ?>
+                        <?php if (Response::isActionResponseVisiable($task->user_id, $task->status, $response->status)): ?>
                             <div class="button-popup">
                                 <a href="<?= Yii::$app->urlManager->createUrl(['tasks/agree', 'id' => $response->id]) ?>" class="button button--blue button--small">Подтвердить</a>
                                 <a href="<?= Yii::$app->urlManager->createUrl(['tasks/disagree', 'id' => $response->id]) ?>" class="button button--orange button--small">Отказать</a>
@@ -142,6 +142,7 @@ use kartik\rating\StarRating;
         <div class="completion-form pop-up--form regular-form">
             <?php $form = ActiveForm::begin([
                 'id' => 'refuse-form',
+                'enableAjaxValidation' => true,
                 'action' => ['/tasks/complete', 'id_task' => $task->id],
             ]); ?>
                 <div class="form-group">

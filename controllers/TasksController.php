@@ -7,12 +7,16 @@ use app\models\forms\TaskSearchForm;
 use app\models\forms\RespondForm;
 use app\models\forms\RefuseForm;
 use app\models\forms\CompleteForm;
-use app\models\Response;
 use app\models\Task;
 use app\models\User;
+use Delta\TaskForce\CancelAction;
+use Delta\TaskForce\GetDoneAction;
+use Delta\TaskForce\RefuseAction;
+use Delta\TaskForce\RespondAction;
+use Delta\TaskForce\TaskAction;
 use Exception;
+use Symfony\Component\CssSelector\Exception\InternalErrorException;
 use Yii;
-use yii\helpers\ArrayHelper;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\ServerErrorHttpException;
@@ -50,9 +54,9 @@ class TasksController extends SecuredController
         $query->where(['status' => Task::STATUS_NEW]);
         $query->orderBy('date_of_publication DESC');
         $tasks = $query->all();
-
         $categories = Category::find()->all();
         $taskForm = new TaskSearchForm();
+
         if (Yii::$app->request->getIsPost()) {
             $taskForm->load(Yii::$app->request->post());
             if ($taskForm->validate()) {
@@ -75,10 +79,8 @@ class TasksController extends SecuredController
         $respondForm = new RespondForm();
         $refuseForm = new RefuseForm();
 
-        if (!$id) {
-            throw new NotFoundHttpException('The task does not exist');
-        }
         $task = Task::findOne($id);
+
         if (!$task) {
             throw new NotFoundHttpException('Task not found');
         }
@@ -93,14 +95,19 @@ class TasksController extends SecuredController
      */
     public function actionCreate()
     {
+        if (!TaskAction::isCreateTaskAvailable(Yii::$app->user->id)){
+            throw new ForbiddenHttpException('Извините, только заказчики могут создавать задания');
+        }
+
         $taskCreateForm = new TaskCreateForm();
+
         if (Yii::$app->request->getIsPost()) {
             $taskCreateForm->load(Yii::$app->request->post());
             $taskCreateForm->files = UploadedFile::getInstances($taskCreateForm, 'files');
 
             if ($taskCreateForm->validate()) {
                 try {
-                    $taskCreateForm->doTransaction($taskCreateForm);
+                    $taskCreateForm->saveFiles($taskCreateForm);
                 } catch (Exception $e) {
                     throw new ServerErrorHttpException('Loading error');
                 }
@@ -110,118 +117,118 @@ class TasksController extends SecuredController
     }
 
     /**
-     * @throws ForbiddenHttpException
      * @throws Exception
      */
-    //это id response
     public function actionAgree($id) {
-        $idAllResponses = ArrayHelper::getColumn(Response::find()->all(), 'id');
-        if (!ArrayHelper::isIn($id, $idAllResponses)) {
-            return throw new ForbiddenHttpException('Извините, отклик не найден');
-        }
-
-        $response = Response::findOne($id);
-        if($response->user->availability === 0) {
-            return throw new ForbiddenHttpException('Извините, исполнитель уже занят');
-        }
-
-        $task = Task::findOne($response->task_id);
-        if ($task->user_id === Yii::$app->user->id)
-        {
-            $transaction = Yii::$app->db->beginTransaction();
-            try {
-                $response->status = 1;
-                $user = User::findOne($response->user->id);
-                $user->availability = 0;
-                $user->save();
-                $response->save();
-                $task->status = Task::STATUS_AT_WORK;
-                $task->save();
-                $transaction->commit();
+        if (TaskAction::isAgreeResponseAvailable($id) && TaskAction::clickAgree($id)) {
                 return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
-            } catch (Exception $e) {
-                $transaction->rollback();
-                throw new Exception('Loading error');
-            }
         } else {
-            return throw new ForbiddenHttpException('Извините, подтверждать отклик может только автор задания');
+            return throw new ForbiddenHttpException('Извините, данное дейтсвие вам недоступно');
         }
     }
 
-
-    public function actionDisagree($id) {
-        $response = Response::findOne($id);
-        $response->status = 0;
-        $response->save();
-        return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
-    }
-
-
-    public function actionRespond($id_task){
-        $task = Task::findOne($id_task);
-        $respondForm = new RespondForm();
-        if (Yii::$app->request->getIsPost()) {
-            $respondForm->load(Yii::$app->request->post());
-            if (Yii::$app->request->isAjax) {
-                Yii::$app->response->format = yii\web\Response::FORMAT_JSON;
-                return ActiveForm::validate($respondForm);
-            }
-            if ($respondForm->validate()) {
-                $respondForm->createRespond($id_task);
-                return $this->goHome();
-            }
+    /**
+     * @throws ForbiddenHttpException
+     * @throws InternalErrorException
+     */
+    public function actionDisagree($id)
+    {
+        if (TaskAction::isDisagreeResponseAvailable($id) && TaskAction::clickDisagree($id)) {
+            return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
+        } else {
+            throw new ForbiddenHttpException('Извините, данное дейтсвие вам недоступно');
         }
-        return $this->render('view', [
-            'task' => $task,
-            'model' => $respondForm,
-        ]);
     }
 
     /**
      * @throws ForbiddenHttpException
      */
+    public function actionRespond($id_task)
+    {
+        $taskModel = new TaskAction(Task::findOne($id_task), Yii::$app->user->id);
+        $taskModelAction = $taskModel->getAvailableActions();
+        if (!$taskModelAction instanceof RespondAction) {
+            throw new ForbiddenHttpException('Данное действие вам недоступно');
+        }
+            $task = Task::findOne($id_task);
+            $respondForm = new RespondForm();
+            if (Yii::$app->request->getIsPost()) {
+                $respondForm->load(Yii::$app->request->post());
+                if (Yii::$app->request->isAjax) {
+                    Yii::$app->response->format = yii\web\Response::FORMAT_JSON;
+                    return ActiveForm::validate($respondForm);
+                }
+                if ($respondForm->validate()) {
+                    $respondForm->createRespond($id_task);
+                    return $this->goHome();
+                }
+            }
+
+            return $this->render('view', [
+                'task' => $task,
+                'model' => $respondForm,
+            ]);
+    }
+
+    /**
+     * @throws ForbiddenHttpException
+     * @throws Exception
+     */
     public function actionComplete($id_task) {
+        $taskModel = new TaskAction(Task::findOne($id_task), Yii::$app->user->id);
+        $taskModelAction = $taskModel->getAvailableActions();
+        if (!$taskModelAction instanceof GetDoneAction) {
+            throw new ForbiddenHttpException('Данное действие вам недоступно');
+        }
         $completeForm = new CompleteForm();
         if (Yii::$app->request->getIsPost()) {
             $completeForm->load(Yii::$app->request->post());
+            if (Yii::$app->request->isAjax) {
+                Yii::$app->response->format = yii\web\Response::FORMAT_JSON;
+                return ActiveForm::validate($completeForm);
+            }
             if ($completeForm->validate()) {
                 $completeForm->completeTask($id_task);
                 return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
             } else {
-                return throw new ForbiddenHttpException('Извините, поля в форме должны быть заполнены');
+                throw new ForbiddenHttpException('Извините, поля в форме должны быть заполнены');
             }
         }
-        return throw new ForbiddenHttpException('Извините, что-то случилось');
+        throw new ForbiddenHttpException('Извините, что-то случилось');
     }
 
+    /**
+     * @throws Exception
+     */
     public function actionRefuse($id_task) {
-        $refuseForm = new RefuseForm();
-        if (Yii::$app->request->getIsPost()) {
-            $refuseForm->load(Yii::$app->request->post());
-            if ($refuseForm->validate()) {
-                $refuseForm->refuseTask($id_task);
-                return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
-            }
+        $taskModel = new TaskAction(Task::findOne($id_task), Yii::$app->user->id);
+        $taskModelAction = $taskModel->getAvailableActions();
+
+        if (!$taskModelAction instanceof RefuseAction) {
+            throw new ForbiddenHttpException('Данное действие вам недоступно');
         }
+        $refuseForm = new RefuseForm();
+        if (Yii::$app->request->getIsPost() && $refuseForm->load(Yii::$app->request->post()) && $refuseForm->validate()) {
+            $refuseForm->refuseTask($id_task);
+        }
+        return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
     }
 
     /**
      * @throws ForbiddenHttpException
+     * @throws InternalErrorException
      */
     //Отмена задания - доступна только заказчику
-    public function actionCancel($id) {
-        $task = Task::findOne($id);
-        if (Yii::$app->user->id === $task->user_id && $task->status === Task::STATUS_NEW) {
-            $task->status = Task::STATUS_CANCELLED;
-            if ($task->save()) {
-                return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
-            } else {
-                return throw new ForbiddenHttpException('Извините, задание не сохранилось');
-            }
+    public function actionCancel($id)
+    {
+        $taskModel = new TaskAction(Task::findOne($id), Yii::$app->user->id);
+        $taskModelAction = $taskModel->getAvailableActions();
+
+        if (!$taskModelAction instanceof CancelAction) {
+            throw new ForbiddenHttpException('Данное действие вам недоступно');
         }
-        else {
-            return throw new ForbiddenHttpException('Извините, вы не можете отменить задание');
-        }
+        TaskAction::cancel($id);
+        return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
     }
 
 }

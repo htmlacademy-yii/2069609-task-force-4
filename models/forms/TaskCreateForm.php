@@ -89,7 +89,7 @@ class TaskCreateForm extends Model
     /**
      * @throws Exception
      */
-    public function doTransaction($model){
+    public function saveFiles($model){
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $task = $model->createTask();

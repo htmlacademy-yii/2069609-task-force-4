@@ -22,6 +22,8 @@ use yii\db\ActiveRecord;
  */
 class Response extends ActiveRecord
 {
+    const STATUS_ACTIVE_RESPONSE = 1;
+
     /**
      * {@inheritdoc}
      */
@@ -42,7 +44,7 @@ class Response extends ActiveRecord
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Task::class, 'targetAttribute' => ['task_id' => 'id']],
             [['status'], 'boolean'],
-            ['status', 'default', 'value' => 0],
+            ['status', 'default', 'value' => null],
             [['comment'], 'default', 'value' => null],
             [['feedback', 'score'], 'default', 'value' => null],
         ];
@@ -85,10 +87,22 @@ class Response extends ActiveRecord
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
-    static function getResponses($user_id){
+    public static function isActionResponseVisiable($taskId, $taskStatus, $responseStatus) {
+        if ((Yii::$app->user->id === $taskId) &&
+            ($taskStatus === Task::STATUS_NEW ) && ($responseStatus === null)){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static function getResponses($user_id): array
+    {
         return Response::find()->where([
             'user_id' => $user_id,
             'feedback' => !null
-            ])->all();
+        ])->all();
     }
+
+
 }
