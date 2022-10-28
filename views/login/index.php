@@ -100,6 +100,8 @@ use app\models\forms\LoginForm;
         </div>
     </div>
 </main>
+
+
 <section class="modal enter-form form-modal" id="enter-form">
     <h2>Вход/Проверка на сайт</h2>
 

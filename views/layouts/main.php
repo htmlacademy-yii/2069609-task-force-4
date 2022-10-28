@@ -4,14 +4,11 @@
 /** @var string $content */
 
 use app\assets\AppAsset;
-use app\widgets\Alert;
-use yii\bootstrap5\Breadcrumbs;
+use app\models\User;
 use yii\bootstrap5\Html;
-use yii\bootstrap5\Nav;
-use yii\bootstrap5\NavBar;
-use yii\helpers\BaseUrl;
 
 AppAsset::register($this);
+//$this->registerJsFile("@web/js/main.js");
 
 $this->registerCsrfMetaTags();
 $this->registerMetaTag(['charset' => Yii::$app->charset], 'charset');
@@ -63,7 +60,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
                 <img class="user-photo" src="<?=Yii::$app->request->baseUrl; ?>/img/man-glasses.png" width="55" height="55" alt="Аватар">
             </a>
             <div class="user-menu">
-                <p class="user-name">Василий</p>
+                <p class="user-name"><?= User::findOne(Yii::$app->user->id)->name; ?></p>
                 <div class="popup-head">
                     <ul class="popup-menu">
                         <li class="menu-item">
@@ -85,7 +82,6 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
 <div class="main-container">
     <?= $content ?>
 </div>
-
 <?php $this->endBody() ?>
 </body>
 </html>

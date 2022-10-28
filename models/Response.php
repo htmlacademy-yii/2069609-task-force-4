@@ -11,16 +11,19 @@ use yii\db\ActiveRecord;
  * @property int $id
  * @property int $user_id
  * @property int $task_id
- * @property int $price
- * @property string $comment
+ * @property int|null $price
+ * @property string|null $comment
  * @property int|null $score
  * @property string|null $feedback
+ * @property boolean $status
  *
  * @property Task $task
  * @property User $user
  */
 class Response extends ActiveRecord
 {
+    const STATUS_ACTIVE_RESPONSE = 1;
+
     /**
      * {@inheritdoc}
      */
@@ -35,11 +38,15 @@ class Response extends ActiveRecord
     public function rules(): array
     {
         return [
-            [['user_id', 'task_id', 'price', 'comment'], 'required'],
+            [['user_id', 'task_id'], 'required'],
             [['user_id', 'task_id', 'price', 'score'], 'integer'],
             [['comment', 'feedback'], 'string', 'max' => 255],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Task::class, 'targetAttribute' => ['task_id' => 'id']],
+            [['status'], 'boolean'],
+            ['status', 'default', 'value' => null],
+            [['comment'], 'default', 'value' => null],
+            [['feedback', 'score'], 'default', 'value' => null],
         ];
     }
 
@@ -51,16 +58,17 @@ class Response extends ActiveRecord
         return [
             'id' => 'ID',
             'user_id' => 'User ID',
-            'task_id' => 'Task ID',
+            'task_id' => 'TaskAction ID',
             'price' => 'Price',
             'comment' => 'Comment',
             'score' => 'Score',
             'feedback' => 'Feedback',
+            'status' => 'Status',
         ];
     }
 
     /**
-     * Gets query for [[Task]].
+     * Gets query for [[TaskAction]].
      *
      * @return \yii\db\ActiveQuery
      */
@@ -79,10 +87,22 @@ class Response extends ActiveRecord
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
-    static function getResponses($user_id){
+    public static function isActionResponseVisiable($taskId, $taskStatus, $responseStatus) {
+        if ((Yii::$app->user->id === $taskId) &&
+            ($taskStatus === Task::STATUS_NEW ) && ($responseStatus === null)){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static function getResponses($user_id): array
+    {
         return Response::find()->where([
             'user_id' => $user_id,
             'feedback' => !null
-            ])->all();
+        ])->all();
     }
+
+
 }

@@ -15,6 +15,7 @@ class RatingWidget extends Widget
         for ($i = 0; $i < self::MAX_COUNT_FILL_STARS; $i++) {
             $result .= Html::tag('span', '&nbsp;', [
                 'class' => $this->rating > $i ? 'fill-star' : '',
+                'href' => '#',
             ]);
         }
         return $result;

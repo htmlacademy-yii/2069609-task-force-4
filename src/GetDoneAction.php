@@ -2,9 +2,11 @@
 
 namespace Delta\TaskForce;
 
+use app\models\Task;
+
 class GetDoneAction extends Action
 {
-    const ACTION = 'Выполнено';
+    const ACTION = 'Завершить';
     const NAME = 'get done';
 
     public function getAction(): string
@@ -17,12 +19,25 @@ class GetDoneAction extends Action
         return self::NAME;
     }
 
-    public static function isAvailable(int $userCurrentId, int $idCustomer, int $idExecutor): bool
+    //Если автор задачи = тек пользователь возвращаем true
+    public static function isAvailable(Task $task, int $userCurrentId): bool
     {
-        if ($userCurrentId === $idCustomer) {
-            return true;
-        } else {
-            return false;
-        }
+        return $task->user_id === $userCurrentId;
+    }
+
+
+    public function getClass(): string
+    {
+        return 'button button--pink action-btn';
+    }
+
+    public function getDataAction(): string
+    {
+        return 'completion';
+    }
+
+    public function getUrlName(): string
+    {
+        return '#';
     }
 }

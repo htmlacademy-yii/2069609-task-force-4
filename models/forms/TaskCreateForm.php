@@ -39,7 +39,7 @@ class TaskCreateForm extends Model
             ['description', 'string', 'min' => 10, 'max' => 255],
             ['details', 'string', 'min' => 30, 'max' => 255],
             ['category', 'exist', 'targetClass' => Category::class, 'targetAttribute' => ['category' => 'id']],
-            ['budget', 'integer', 'min' => 0],
+            ['budget', 'integer', 'min' => 1],
             [['files'], 'file', 'maxFiles' => 4]
         ];
     }
@@ -89,7 +89,7 @@ class TaskCreateForm extends Model
     /**
      * @throws Exception
      */
-    public function doTransaction($model){
+    public function saveFiles($model){
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $task = $model->createTask();

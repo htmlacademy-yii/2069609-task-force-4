@@ -3,6 +3,7 @@
 namespace app\models\forms;
 
 use app\models\Category;
+use Exception;
 use Yii;
 use yii\base\Model;
 use app\models\User;
@@ -45,18 +46,28 @@ class RegistrationForm extends Model
         ];
     }
 
+    /**
+     * @throws Exception
+     */
     public function createUser(){
+        $transaction = Yii::$app->db->beginTransaction();
         $user = new User();
-        $user->name = $this->name;
-        $user->email = $this->email;
-        $user->city_id = $this->city;
-        $user->password = Yii::$app->getSecurity()->generatePasswordHash($this->password);
-        if ($this->isExecutor === true){
-            $user->role = RegistrationForm::ROLE_EXECUTOR;
-        } else {
-            $user->role = RegistrationForm::ROLE_CUSTOMER;
+        try {
+            $user->name = $this->name;
+            $user->email = $this->email;
+            $user->city_id = $this->city;
+            $user->password = Yii::$app->getSecurity()->generatePasswordHash($this->password);
+            if ($this->isExecutor === true){
+                $user->role = RegistrationForm::ROLE_EXECUTOR;
+            } else {
+                $user->role = RegistrationForm::ROLE_CUSTOMER;
+            }
+            $user->save();
+            $transaction->commit();
+        } catch (Exception $e) {
+            $transaction->rollback();
+            throw new Exception('Loading error');
         }
-        $user->save();
     }
 
 }

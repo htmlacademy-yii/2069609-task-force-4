@@ -45,7 +45,7 @@ class File extends ActiveRecord
         return [
             'id' => 'ID',
             'title' => 'Title',
-            'task_id' => 'Task ID'
+            'task_id' => 'TaskAction ID'
         ];
     }
 
