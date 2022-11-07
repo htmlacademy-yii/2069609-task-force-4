@@ -59,8 +59,10 @@ class TaskCreateForm extends Model
         $task->budget = $this->budget;
         $task->user_id = Yii::$app->user->id;
         if ($this->location) {
-            $task->latitude = Yii::$app->geocoder->getPoint($this->location)['lat'];
-            $task->longitude = Yii::$app->geocoder->getPoint($this->location)['long'];
+            $latlong = Yii::$app->geocoder->getPoint($this->location);
+
+            $task->latitude = $latlong['lat'];
+            $task->longitude = $latlong['long'];
         }
         if ($task->save()) {
             return $task;

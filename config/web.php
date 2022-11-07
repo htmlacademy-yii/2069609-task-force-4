@@ -56,7 +56,7 @@ $config = [
         'geocoder' => [
             'class' => \app\components\Geocoder::class,
             'apiKey' => 'e666f398-c983-4bde-8f14-e3fec900592a',
-            'autocomplete' => true,
+            'baseUri' => 'https://geocode-maps.yandex.ru/',
         ],
     ],
     'params' => $params,

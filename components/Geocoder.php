@@ -3,31 +3,35 @@
 namespace app\components;
 
 use Exception;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
+use Yii;
+use yii\base\Component;
 use yii\helpers\ArrayHelper;
-use yii\web\ForbiddenHttpException;
+use GuzzleHttp\Client;
 
-class Geocoder extends \yii\base\Component
+class Geocoder extends Component
 {
-    public $apiKey;
+    const KEY_POINT = 'response.GeoObjectCollection.featureMember.0.GeoObject.Point.pos';
+    public string $apiKey;
+    public Client $client;
+
+    public function __construct(array $config = [])
+    {
+        parent::__construct($config);
+        $this->client = new Client(['base_uri' => Yii::$app->geocoder->baseUri]);
+    }
 
     public function getAddress(){
         //напишу после первой проверки
     }
-
     /**
      * @throws GuzzleException
      * @throws Exception
      */
     public function getPoint($address){
-
-        $client = new Client([
-            'base_uri' => 'https://geocode-maps.yandex.ru/',
-        ]);
         try {
-            $response = $client->request('GET', '1.x', [
+            $response = $this->client->request('GET', '1.x', [
                 'query' =>
                     [
                         'geocode' => $address,
@@ -35,10 +39,11 @@ class Geocoder extends \yii\base\Component
                         'result' => 1,
                     ]
             ]);
+
             $content = $response->getBody()->getContents();
             $response_data = json_decode($content, true);
-            $addressPlace = ArrayHelper::getValue($response_data, 'response.GeoObjectCollection.featureMember');
-            $latLong = explode(' ', ArrayHelper::getValue($addressPlace, 'GeoObject.Point.pos'));
+            $addressPlace = ArrayHelper::getValue($response_data, self::KEY_POINT);
+            $latLong = explode(' ', $addressPlace);
             $result = [
                 'lat' => $latLong['0'],
                 'long' => $latLong['1'],

@@ -10,7 +10,6 @@
 use app\models\Response;
 use app\models\Task;
 use app\widgets\TaskActionWidget;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use app\widgets\RatingWidget;
@@ -21,7 +20,11 @@ use app\models\forms\CompleteForm;
 use yii\widgets\ActiveForm;
 use kartik\rating\StarRating;
 
+$this->registerJsFile('https://api-maps.yandex.ru/2.1/?apikey=' .Yii::$app->geocoder->apiKey. '&lang=ru_RU');
 ?>
+
+
+
 <main class="main-content container">
     <div class="left-column">
         <div class="head-wrapper">
