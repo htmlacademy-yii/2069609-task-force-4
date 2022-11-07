@@ -13,17 +13,36 @@ use GuzzleHttp\Client;
 class Geocoder extends Component
 {
     const KEY_POINT = 'response.GeoObjectCollection.featureMember.0.GeoObject.Point.pos';
+    const KEY_ADDRESS = 'response.GeoObjectCollection.featureMember.0.GeoObject.name';
+
     public string $apiKey;
+    public string $baseUri;
     public Client $client;
 
     public function __construct(array $config = [])
     {
         parent::__construct($config);
-        $this->client = new Client(['base_uri' => Yii::$app->geocoder->baseUri]);
+        $this->client = new Client(['base_uri' => $this->baseUri]);
     }
 
-    public function getAddress(){
-        //напишу после первой проверки
+    /**
+     * @throws GuzzleException
+     * @throws Exception
+     */
+    public function getAddress($longlat){
+            $response = $this->client->request('GET', '1.x', [
+                'query' =>
+                    [
+                        'apikey' => $this->apiKey,
+                        'geocode' => $longlat,
+                        'format' => 'json',
+                        'result' => 1,
+                    ]
+            ]);
+
+            $content = $response->getBody()->getContents();
+            $response_data = json_decode($content, true);
+            return ArrayHelper::getValue($response_data, self::KEY_ADDRESS);
     }
     /**
      * @throws GuzzleException
@@ -34,6 +53,7 @@ class Geocoder extends Component
             $response = $this->client->request('GET', '1.x', [
                 'query' =>
                     [
+                        'apikey' => $this->apiKey,
                         'geocode' => $address,
                         'format' => 'json',
                         'result' => 1,

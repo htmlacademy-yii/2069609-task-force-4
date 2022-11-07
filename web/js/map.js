@@ -8,6 +8,4 @@ function init(){
         center: [lat, long],
         zoom: 10
     });
-
-
 }

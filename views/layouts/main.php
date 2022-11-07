@@ -26,6 +26,9 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title><?= Html::encode($this->title) ?></title>
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=<?= Yii::$app->geocoder->apiKey ?>&lang=ru_RU"
+            type="text/javascript">
+    </script>
     <?php $this->head() ?>
 </head>
 <body>

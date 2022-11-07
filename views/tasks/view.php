@@ -19,8 +19,6 @@ use app\models\forms\RefuseForm;
 use app\models\forms\CompleteForm;
 use yii\widgets\ActiveForm;
 use kartik\rating\StarRating;
-
-$this->registerJsFile('https://api-maps.yandex.ru/2.1/?apikey=' .Yii::$app->geocoder->apiKey. '&lang=ru_RU');
 ?>
 
 
@@ -46,6 +44,7 @@ $this->registerJsFile('https://api-maps.yandex.ru/2.1/?apikey=' .Yii::$app->geoc
                 <input type="hidden" id="long" value="<?= HTML::encode($task->longitude); ?>">
                 <div class="map" id="map"></div>
             </div>
+        <p><?=Yii::$app->geocoder->getAddress($task->latitude . ',' . $task->longitude) ?></p>
         <?php endif; ?>
 
         <?php if ((Yii::$app->user->id === $task->user_id) || $task->getResponseForUser(Yii::$app->user->id, $task->id)): ?>
@@ -196,7 +195,15 @@ $this->registerJsFile('https://api-maps.yandex.ru/2.1/?apikey=' .Yii::$app->geoc
             <button class="button--close" type="button">Закрыть окно</button>
         </div>
     </div>
-
 </section>
 <div class="overlay"></div>
 
+<script type="text/javascript">
+    ymaps.ready(init);
+    function init(){
+        var myMap = new ymaps.Map("map", {
+            center: [<?=$task->longitude ?>, <?=$task->latitude ?>],
+            zoom: 15
+        });
+    }
+</script>

@@ -24,7 +24,6 @@ class AppAsset extends AssetBundle
         ];
     public $js = [
         'js/main.js',
-        'js/map.js',
         ];
     public $depends = [
         'yii\web\YiiAsset'
