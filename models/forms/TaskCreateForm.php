@@ -8,6 +8,7 @@ use app\models\Task;
 use Exception;
 use Yii;
 use yii\base\Model;
+use app\components\Geocoder;
 
 class TaskCreateForm extends Model
 {
@@ -36,11 +37,12 @@ class TaskCreateForm extends Model
     {
         return [
             [['description', 'details', 'category'], 'required'],
-            ['description', 'string', 'min' => 10, 'max' => 255],
+            [['description'], 'string', 'min' => 10, 'max' => 255],
             ['details', 'string', 'min' => 30, 'max' => 255],
             ['category', 'exist', 'targetClass' => Category::class, 'targetAttribute' => ['category' => 'id']],
             ['budget', 'integer', 'min' => 1],
-            [['files'], 'file', 'maxFiles' => 4]
+            [['files'], 'file', 'maxFiles' => 4],
+            [['location'], 'string', 'max' => 255],
         ];
     }
 
@@ -56,7 +58,12 @@ class TaskCreateForm extends Model
         $task->date_of_execution = date('Y-m-d', $this->dateOfExecution);
         $task->budget = $this->budget;
         $task->user_id = Yii::$app->user->id;
+        if ($this->location) {
+            $latlong = Yii::$app->geocoder->getPoint($this->location);
 
+            $task->latitude = $latlong['lat'];
+            $task->longitude = $latlong['long'];
+        }
         if ($task->save()) {
             return $task;
         } else {
@@ -89,7 +96,7 @@ class TaskCreateForm extends Model
     /**
      * @throws Exception
      */
-    public function saveFiles($model){
+    public function saveTask($model){
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $task = $model->createTask();

@@ -10,7 +10,7 @@
 use app\models\Response;
 use app\models\Task;
 use app\widgets\TaskActionWidget;
-use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 use yii\helpers\Url;
 use app\widgets\RatingWidget;
 use Delta\TaskForce\TaskAction;
@@ -19,8 +19,10 @@ use app\models\forms\RefuseForm;
 use app\models\forms\CompleteForm;
 use yii\widgets\ActiveForm;
 use kartik\rating\StarRating;
-
 ?>
+
+
+
 <main class="main-content container">
     <div class="left-column">
         <div class="head-wrapper">
@@ -36,12 +38,14 @@ use kartik\rating\StarRating;
         $actionObject = $taskAction->getAvailableActions(); ?>
         <?= $actionObject !== null ? TaskActionWidget::widget(['actionObject' => $actionObject]) : ''; ?>
 
-        <div class="task-map">
-            <img class="map" src="<?php echo Yii::$app->request->baseUrl; ?>/img/map.png"  width="725" height="346" alt="Новый арбат, 23, к. 1">
-            <p class="map-address town">Москва</p>
-            <p class="map-address">Новый арбат, 23, к. 1</p>
-        </div>
-
+        <?php if ($task->latitude): ?>
+            <div class="task-map">
+                <input type="hidden" id="lat" value="<?= HTML::encode($task->latitude); ?>">
+                <input type="hidden" id="long" value="<?= HTML::encode($task->longitude); ?>">
+                <div class="map" id="map"></div>
+            </div>
+        <p><?=Yii::$app->geocoder->getAddress($task->latitude . ',' . $task->longitude) ?></p>
+        <?php endif; ?>
 
         <?php if ((Yii::$app->user->id === $task->user_id) || $task->getResponseForUser(Yii::$app->user->id, $task->id)): ?>
             <h4 class="head-regular">Отклики на задание</h4>
@@ -194,3 +198,12 @@ use kartik\rating\StarRating;
 </section>
 <div class="overlay"></div>
 
+<script type="text/javascript">
+    ymaps.ready(init);
+    function init(){
+        var myMap = new ymaps.Map("map", {
+            center: [<?=$task->longitude ?>, <?=$task->latitude ?>],
+            zoom: 15
+        });
+    }
+</script>

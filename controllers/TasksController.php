@@ -107,7 +107,7 @@ class TasksController extends SecuredController
 
             if ($taskCreateForm->validate()) {
                 try {
-                    $taskCreateForm->saveFiles($taskCreateForm);
+                    $taskCreateForm->saveTask($taskCreateForm);
                 } catch (Exception $e) {
                     throw new ServerErrorHttpException('Loading error');
                 }
